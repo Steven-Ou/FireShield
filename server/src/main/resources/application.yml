@@ -13,6 +13,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  config:
+    import: optional:file:.env
 
 server:
   port: 8080
@@ -20,7 +22,7 @@ server:
 logging:
   level:
     root: info
-    org.springframework.security: info
+    org.springframework.security: DEBUG
     org.hibernate.SQL: warn
 
 app:
@@ -31,3 +33,7 @@ app:
     allowed-origins: "http://localhost:3000, http://127.0.0.1:3000, http://localhost:8080"
   ingest:
     device-header: "X-Device-Key"
+  gemini:
+    model: "gemini-2.5-flash"   # fast & low-cost; swap to gemini-2.0-pro for deeper reasoning
+    maxOutputTokens: 512
+    temperature: 0.3

@@ -1,4 +1,4 @@
-// config/SecurityConfig.java
+// src/main/java/com/fireshield/server/config/SecurityConfig.java
 package com.fireshield.server.config;
 
 import com.fireshield.server.repo.DeviceRepository;
@@ -27,7 +27,9 @@ public class SecurityConfig {
       @Value("${app.ingest.device-header}") String ingestHeader,
       @Value("${app.cors.allowed-origins}") String allowedOriginsCsv
   ) {
-    this.jwt = jwt; this.devices = devices; this.ingestHeader = ingestHeader;
+    this.jwt = jwt;
+    this.devices = devices;
+    this.ingestHeader = ingestHeader;
     this.allowedOrigins = List.of(allowedOriginsCsv.split("\\s*,\\s*"));
   }
 
@@ -38,8 +40,8 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(reg -> reg
             .requestMatchers("/health", "/actuator/health").permitAll()
-            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/samples").permitAll()   // guarded by DeviceKeyFilter
+            .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()     // wildcard for auth endpoints
+            .requestMatchers(HttpMethod.POST, "/samples").permitAll()     // guarded by DeviceKeyFilter
             .anyRequest().authenticated()
         )
         .addFilterBefore(new DeviceKeyFilter(devices, ingestHeader),
