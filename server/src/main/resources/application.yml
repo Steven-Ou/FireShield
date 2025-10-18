@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fireschild
-    username: fs
-    password: fs
+    url: jdbc:postgresql://localhost:5432/fireshield
+    username: app
+    password: app
   jpa:
     hibernate:
       ddl-auto: validate
