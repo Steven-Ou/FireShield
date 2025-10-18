@@ -56,7 +56,7 @@ struct SafetyInsightsView: View {
                         Text(err).foregroundColor(.white).padding(.horizontal)
                     }
 
-                    Spacer(minimumLength: 12)
+                    Spacer(minLength: 12)
                 }
             }
         }
@@ -103,27 +103,60 @@ struct ChecklistCard: View {
     }
 }
 
+// MARK: - Preview
+
+private struct SafetyInsightsView_PreviewHarness: View {
+    @StateObject private var state: AppState
+
+    init() {
+        // Build explicit, typed preview data so the compiler never guesses.
+        let base: URL = URL(string: "http://127.0.0.1:8080/")!
+        let client = ApiClient(baseURL: base)
+        let s = AppState(api: client)
+
+        var metrics: [String: AnyCodable] = [:]
+        metrics["severity"] = AnyCodable("ELEVATED")
+        metrics["avg_tvoc_ppb"] = AnyCodable(Double(780))
+        metrics["max_tvoc_ppb"] = AnyCodable(Double(1120))
+        metrics["fraction_time_critical"] = AnyCodable(Double(0.18))
+
+        s.report = InsightsReport(
+            windowHours: 24,
+            metrics: metrics,
+            aiReport: .init(
+                summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
+                riskScore: 72,
+                keyFindings: [
+                    "Spikes above 900 ppb",
+                    "Upward trend in last 6h",
+                    "18% time in critical"
+                ],
+                recommendations: [
+                    "Vent apparatus bay 30+ min",
+                    "Bag PPE outside quarters",
+                    "Surface wipe-down today"
+                ],
+                deconChecklist: [
+                    "Open bay doors",
+                    "Bag & isolate PPE",
+                    "Wipe contact surfaces",
+                    "Shower within 1 hour"
+                ],
+                policySuggestion: "Adopt post-call ventilation SOP; track elevated events weekly."
+            ),
+            model: "mock",
+            source: "preview"
+        )
+
+        _state = StateObject(wrappedValue: s)
+    }
+
+    var body: some View {
+        SafetyInsightsView()
+            .environmentObject(state)
+    }
+}
+
 #Preview {
-    let base = URL(string: "http://127.0.0.1:8080/")!
-    let mock = AppState(api: ApiClient(baseURL: base))
-    mock.report = InsightsReport(
-        windowHours: 24,
-        metrics: [
-            "severity": AnyCodable("ELEVATED"),
-            "avg_tvoc_ppb": AnyCodable(780.0),
-            "max_tvoc_ppb": AnyCodable(1120.0),
-            "fraction_time_critical": AnyCodable(0.18)
-        ],
-        aiReport: .init(
-            summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
-            riskScore: 72,
-            keyFindings: ["Spikes above 900 ppb", "Upward trend in last 6h", "18% time in critical"],
-            recommendations: ["Vent apparatus bay 30+ min", "Bag PPE outside quarters", "Surface wipe-down today"],
-            deconChecklist: ["Open bay doors", "Bag & isolate PPE", "Wipe contact surfaces", "Shower within 1 hour"],
-            policySuggestion: "Adopt post-call ventilation SOP; track elevated events weekly."
-        ),
-        model: "gemini-2.5-flash",
-        source: "fallback"
-    )
-    return SafetyInsightsView().environmentObject(mock)
+    SafetyInsightsView_PreviewHarness()
 }

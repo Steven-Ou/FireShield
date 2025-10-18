@@ -6,7 +6,8 @@ class ViewRouter: ObservableObject {
     @Published var currentPage: Page
 
     init() {
-        self.currentPage = hasCompletedOnboarding ? .login : .onboarding
+        self.currentPage = .onboarding            // initialize first
+        if hasCompletedOnboarding { currentPage = .login }  // then read @AppStorage
     }
 
     func completeOnboarding() {

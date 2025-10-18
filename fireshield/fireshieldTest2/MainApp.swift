@@ -6,7 +6,6 @@ struct MainApp: App {
     @StateObject private var state: AppState
 
     init() {
-        // Point to your backend (LAN/prod if not localhost)
         let base = URL(string: "http://127.0.0.1:8080/")!
         let api  = ApiClient(baseURL: base)
         _state = StateObject(wrappedValue: AppState(api: api))
@@ -18,7 +17,6 @@ struct MainApp: App {
         WindowGroup {
             Group {
                 if viewRouter.hasCompletedOnboarding {
-                    // After onboarding, show Login or Dashboard based on auth
                     if state.isAuthenticated {
                         DashboardView(username: "Firefighter")
                             .environmentObject(viewRouter)
@@ -29,8 +27,7 @@ struct MainApp: App {
                             .environmentObject(state)
                     }
                 } else {
-                    OnboardingView()
-                        .environmentObject(viewRouter)
+                    OnboardingView().environmentObject(viewRouter)
                 }
             }
             .onChange(of: scenePhase) { _, phase in
