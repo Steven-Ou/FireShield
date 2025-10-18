@@ -3,13 +3,13 @@ import SwiftUI
 struct ContentView: View {
     // This view owns the data, so we use @State
     @State private var isLoggedIn = false
-
+    
     // State for the text fields and UI
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
     @State private var isLoading = false
-
+    
     var body: some View {
         ZStack {
             // Fiery gradient background that covers the whole screen
@@ -19,7 +19,7 @@ struct ContentView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-
+            
             VStack(spacing: 20) {
                 Spacer()
                 
@@ -27,7 +27,7 @@ struct ContentView: View {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.orange)
-                    // Added a shadow to lift the icon off the background
+                // Added a shadow to lift the icon off the background
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 5)
                 
                 Text("Fire Shield")
@@ -37,13 +37,13 @@ struct ContentView: View {
                 
                 Text("Sign in to track your health")
                     .foregroundColor(.black.opacity(0.8)) // Subtly less prominent black
-
+                
                 VStack(spacing: 15) {
                     TextField("Email Address", text: $email)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .padding(12)
-                        // Using a semi-transparent material for the text fields
+                    // Using a semi-transparent material for the text fields
                         .background(.ultraThinMaterial)
                         .cornerRadius(10)
                     
@@ -53,7 +53,7 @@ struct ContentView: View {
                         .cornerRadius(10)
                 }
                 .padding(.horizontal)
-
+                
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.white)
@@ -74,9 +74,9 @@ struct ContentView: View {
                             .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            // Text color is now black for readability
+                        // Text color is now black for readability
                             .foregroundColor(.black)
-                            // The button background adapts with a material effect
+                        // The button background adapts with a material effect
                             .background(.regularMaterial)
                             .cornerRadius(10)
                     }
@@ -96,11 +96,11 @@ struct ContentView: View {
             .padding()
         }
     }
-
+    
     func handleLogin() {
         isLoading = true
         errorMessage = ""
-
+        
         if email.isEmpty || password.isEmpty {
             errorMessage = "Please fill in both email and password."
             isLoading = false
