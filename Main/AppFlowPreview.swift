@@ -16,12 +16,9 @@ struct AppFlowPreview: View {
             LoginView()
                 .environmentObject(viewRouter)
         case .dashboard:
-            if let userName = viewRouter.loggedInUserName {
-                DashboardView(username: userName)
-            } else {
-                // For the preview, we can just show a sample dashboard
-                DashboardView(username: "Test User")
-            }
+            // For the preview, we can just show a sample dashboard
+            DashboardView(username: "Test User")
+                .environmentObject(viewRouter)
         }
     }
 }
