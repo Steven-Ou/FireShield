@@ -2,9 +2,9 @@ import SwiftUI
 
 struct TrendsView: View {
     @State private var readings: [VOCReading] = VOCReading.sampleData()
-
+    
     var body: some View {
-        // Use a ZStack to layer the gradient behind the content
+        // Use a ZStack to layer the gradient behind all other content
         ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
@@ -12,7 +12,7 @@ struct TrendsView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Weekly VOC Exposure")
@@ -21,23 +21,23 @@ struct TrendsView: View {
                         .foregroundColor(.white)
                         .shadow(radius: 2)
                         .padding([.top, .horizontal])
-
+                    
                     HStack(spacing: 15) {
-                        SummaryCard(title: "Avg TVOC", value: String(format: "%.0f ppb", averageTVOC()), color: .black)
-                        SummaryCard(title: "Max TVOC", value: String(format: "%.0f ppb", maxTVOC()), color: .black)
+                        SummaryCard(title: "Avg TVOC", value: String(format: "%.0f ppb", averageTVOC()), color: .orange)
+                        SummaryCard(title: "Max TVOC", value: String(format: "%.0f ppb", maxTVOC()), color: .red)
                     }
                     .padding(.horizontal)
-
+                    
                     HStack(spacing: 15) {
                         SummaryCard(title: "Avg Formaldehyde", value: String(format: "%.2f ppm", averageFormaldehyde()), color: .black)
                         SummaryCard(title: "Avg Benzene", value: String(format: "%.2f ppm", averageBenzene()), color: .black)
                     }
                     .padding(.horizontal)
-
+                    
                     Divider()
                         .background(Color.white.opacity(0.5))
                         .padding()
-
+                    
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(readings) { reading in
                             VStack(alignment: .leading, spacing: 4) {
@@ -56,33 +56,37 @@ struct TrendsView: View {
                     .padding(.horizontal)
                 }
             }
+            .scrollContentBackground(.hidden) // Make the ScrollView's background transparent
         }
     }
-
-    // Helper functions remain the same
+    
+    // Helper functions to calculate metrics
     func averageTVOC() -> Double {
-        readings.map { $0.tvoc_ppb }.reduce(0, +) / Double(readings.count)
+        guard !readings.isEmpty else { return 0 }
+        return readings.map { $0.tvoc_ppb }.reduce(0, +) / Double(readings.count)
     }
-
+    
     func maxTVOC() -> Double {
         readings.map { $0.tvoc_ppb }.max() ?? 0
     }
-
+    
     func averageFormaldehyde() -> Double {
-        readings.map { $0.formaldehyde_ppm }.reduce(0, +) / Double(readings.count)
+        guard !readings.isEmpty else { return 0 }
+        return readings.map { $0.formaldehyde_ppm }.reduce(0, +) / Double(readings.count)
     }
-
+    
     func averageBenzene() -> Double {
-        readings.map { $0.benzene_ppm }.reduce(0, +) / Double(readings.count)
+        guard !readings.isEmpty else { return 0 }
+        return readings.map { $0.benzene_ppm }.reduce(0, +) / Double(readings.count)
     }
 }
 
-// Updated SummaryCard to use material background
+// RESTORED: Definition for the SummaryCard view
 struct SummaryCard: View {
     let title: String
     let value: String
     let color: Color
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
@@ -100,20 +104,20 @@ struct SummaryCard: View {
     }
 }
 
-// VOCReading struct remains the same
+// RESTORED: Definition and sample data for the VOCReading model
 struct VOCReading: Identifiable {
     let id = UUID()
     let date: Date
     let tvoc_ppb: Double
     let formaldehyde_ppm: Double
     let benzene_ppm: Double
-
+    
     var dateString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         return formatter.string(from: date)
     }
-
+    
     static func sampleData() -> [VOCReading] {
         let calendar = Calendar.current
         let today = Date()
@@ -128,6 +132,7 @@ struct VOCReading: Identifiable {
         }.reversed()
     }
 }
+
 
 struct TrendsView_Previews: PreviewProvider {
     static var previews: some View {
