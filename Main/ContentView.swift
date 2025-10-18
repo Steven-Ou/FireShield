@@ -11,70 +11,90 @@ struct ContentView: View {
     @State private var isLoading = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            
-            Image(systemName: "shield.lefthalf.filled.trianglebadge.exclamationmark")
-                .font(.system(size: 80))
-                .foregroundColor(.accentColor)
-            
-            Text("Fire Shield")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            Text("Sign in to track your health")
-                .foregroundColor(.secondary)
+        ZStack {
+            // Fiery gradient background that covers the whole screen
+            LinearGradient(
+                gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
 
-            VStack(spacing: 15) {
-                TextField("Email Address", text: $email)
-                    // These modifiers are for iOS to style the text field
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                    .padding(12)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(10)
+            VStack(spacing: 20) {
+                Spacer()
                 
-                SecureField("Password", text: $password)
-                    .padding(12)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(10)
-            }
-            .padding(.horizontal)
+                // New fiery icon
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.orange)
+                    // Added a shadow to lift the icon off the background
+                    .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 5)
+                
+                Text("Fire Shield")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black) // Text color set to black
+                
+                Text("Sign in to track your health")
+                    .foregroundColor(.black.opacity(0.8)) // Subtly less prominent black
 
-            if !errorMessage.isEmpty {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-            }
-            
-            if isLoading {
-                ProgressView()
-                    .padding()
-            } else {
-                Button(action: handleLogin) {
-                    Text("Sign In")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
+                VStack(spacing: 15) {
+                    TextField("Email Address", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .padding(12)
+                        // Using a semi-transparent material for the text fields
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(10)
+                    
+                    SecureField("Password", text: $password)
+                        .padding(12)
+                        .background(.ultraThinMaterial)
                         .cornerRadius(10)
                 }
                 .padding(.horizontal)
+
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .padding(8)
+                        .background(.black.opacity(0.5))
+                        .cornerRadius(8)
+                }
+                
+                if isLoading {
+                    ProgressView()
+                        .padding()
+                } else {
+                    Button(action: handleLogin) {
+                        Text("Sign In")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            // Text color is now black for readability
+                            .foregroundColor(.black)
+                            // The button background adapts with a material effect
+                            .background(.regularMaterial)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+                
+                Button("Don't have an account? Sign Up") {
+                    // Action for signing up
+                }
+                .font(.footnote)
+                .foregroundColor(.black) // Text color set to black
+                
+                Spacer()
             }
-            
-            Spacer()
-            
-            Button("Don't have an account? Sign Up") {
-                // Action for signing up
-            }
-            .font(.footnote)
-            
-            Spacer()
+            .padding()
         }
-        .padding()
     }
 
     func handleLogin() {
