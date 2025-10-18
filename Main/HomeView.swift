@@ -7,67 +7,79 @@ struct HomeView: View {
     @State private var airQualityStatus: String = "Elevated"
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Live Summary")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .shadow(radius: 2)
-                    .padding([.top, .horizontal])
-                
-                HStack(spacing: 15) {
-                    MetricCard(title: "TVOC", value: "\(Int(tvoc)) ppb", color: .black)
-                    MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .red)
-                }
-                .padding(.horizontal)
-                
-                HStack(spacing: 15) {
-                    // Changed the color from .white to .black for better contrast
-                    MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .black)
-                    MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .black)
-                }
-                .padding(.horizontal)
-                
-                VStack(alignment: .leading) {
-                    Text("24-Hour Exposure Trend")
-                        .font(.headline)
+        // The ZStack allows us to place the gradient behind all other content.
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Live Summary")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
-                        .shadow(radius: 1)
+                        .shadow(radius: 2)
                         .padding([.top, .horizontal])
                     
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(.regularMaterial)
-                        .frame(height: 180)
-                        .overlay(
-                            Text("Graph coming soon...")
-                                .foregroundColor(.black.opacity(0.6))
-                        )
-                        .padding(.horizontal)
-                }
-                
-                // Alert section for elevated VOCs
-                if tvoc > 400 {
                     HStack(spacing: 15) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.yellow)
-                            .font(.title)
-                        VStack(alignment: .leading) {
-                            Text("High VOC Levels Detected")
-                                .fontWeight(.bold)
-                            Text("Consider increasing ventilation and checking gear.")
-                                .font(.subheadline)
-                        }
-                        .foregroundColor(.white)
+                        MetricCard(title: "TVOC", value: "\(Int(tvoc)) ppb", color: .orange)
+                        MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .yellow)
                     }
-                    .padding()
-                    .background(.black.opacity(0.4))
-                    .cornerRadius(15)
                     .padding(.horizontal)
+                    
+                    HStack(spacing: 15) {
+                        // Text color is now black for better readability
+                        MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .black)
+                        MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .black)
+                    }
+                    .padding(.horizontal)
+                    
+                    VStack(alignment: .leading) {
+                        Text("24-Hour Exposure Trend")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .shadow(radius: 1)
+                            .padding([.top, .horizontal])
+                        
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(.regularMaterial)
+                            .frame(height: 180)
+                            .overlay(
+                                Text("Graph coming soon...")
+                                    .foregroundColor(.black.opacity(0.6))
+                            )
+                            .padding(.horizontal)
+                    }
+                    
+                    // Alert section for elevated VOCs
+                    if tvoc > 400 {
+                        HStack(spacing: 15) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title)
+                            VStack(alignment: .leading) {
+                                Text("High VOC Levels Detected")
+                                    .fontWeight(.bold)
+                                Text("Consider increasing ventilation and checking gear.")
+                                    .font(.subheadline)
+                            }
+                            .foregroundColor(.white)
+                        }
+                        .padding()
+                        .background(.black.opacity(0.4))
+                        .cornerRadius(15)
+                        .padding(.horizontal)
+                    }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
             }
+            // This is the key change to make the ScrollView transparent
+            .scrollContentBackground(.hidden)
         }
     }
 }
@@ -86,7 +98,7 @@ struct MetricCard: View {
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(color) // The color is now passed in and respects the new choice
+                .foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -97,7 +109,8 @@ struct MetricCard: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        // Wrap in a ZStack with the gradient for an accurate preview
+        // The preview now includes a ZStack and the gradient
+        // to accurately reflect the in-app appearance.
         ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
