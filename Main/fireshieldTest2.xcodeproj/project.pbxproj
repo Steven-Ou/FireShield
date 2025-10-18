@@ -10,14 +10,6 @@
 		9F0C1E762EA42B3A008114FB /* fireshieldTest2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fireshieldTest2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		9F0C1E782EA42B3A008114FB /* fireshieldTest2 */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = fireshieldTest2;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		9F0C1E732EA42B3A008114FB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -32,7 +24,6 @@
 		9F0C1E6D2EA42B3A008114FB = {
 			isa = PBXGroup;
 			children = (
-				9F0C1E782EA42B3A008114FB /* fireshieldTest2 */,
 				9F0C1E772EA42B3A008114FB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +50,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				9F0C1E782EA42B3A008114FB /* fireshieldTest2 */,
 			);
 			name = fireshieldTest2;
 			packageProductDependencies = (

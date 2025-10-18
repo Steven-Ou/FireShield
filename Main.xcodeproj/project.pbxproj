@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		AA67A3612EA356DC00B9CA63 /* Main.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Main.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAB329D32EA4377C00721265 /* fireshieldTest2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = fireshieldTest2.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -41,6 +42,13 @@
 			isa = PBXGroup;
 			children = (
 				AA67A3612EA356DC00B9CA63 /* Main.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AAB329D42EA4377C00721265 /* Products */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,6 +105,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AA67A3622EA356DC00B9CA63 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = AAB329D42EA4377C00721265 /* Products */;
+					ProjectRef = AAB329D32EA4377C00721265 /* fireshieldTest2.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				AA67A3602EA356DC00B9CA63 /* Main */,
