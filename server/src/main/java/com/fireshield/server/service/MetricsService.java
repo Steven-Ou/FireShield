@@ -18,7 +18,7 @@ public class MetricsService {
   private static final double TVOC_ELEVATED = 500.0;
   private static final double TVOC_CRITICAL = 900.0;
 
-  // Default rounding precision for averages
+  // Default rounding precision
   private static final int ROUND_DECIMALS = 3;
 
   private final SampleRepository samples;
@@ -27,22 +27,22 @@ public class MetricsService {
     this.samples = samples;
   }
 
-  /** Default 24h overview */
+  /** Default 24h overview (used by /metrics) */
   @Transactional(readOnly = true)
   public Map<String, Object> overview() {
     return overviewForHours(24);
   }
 
-  /** Overview for a caller-specified window (in hours) */
+  /** Simple overview for a caller-specified window (used by /insights) */
   @Transactional(readOnly = true)
   public Map<String, Object> overviewForHours(int windowHours) {
     if (windowHours <= 0) windowHours = 24;
 
-    // Native query sometimes returns Object[][] (one row) instead of flat Object[]
     Object raw = samples.averagesLastHours(windowHours);
     Object[] row = normalizeRow(raw);
 
-    log.info("[DEBUG] averagesLastHours({}): {}", windowHours, java.util.Arrays.deepToString(new Object[][]{row}));
+    log.info("[DEBUG] averagesLastHours({}): [[{}, {}, {}]]",
+        windowHours, safe(row, 0), safe(row, 1), safe(row, 2));
 
     Double avgTvoc = round(toNumber(row, 0), ROUND_DECIMALS);
     Double avgForm = round(toNumber(row, 1), ROUND_DECIMALS);
@@ -59,24 +59,81 @@ public class MetricsService {
     return out;
   }
 
+  /** Rich metrics for awareness report (used by /insights/report) */
+  @Transactional(readOnly = true)
+  public Map<String, Object> detailedMetrics(int windowHours) {
+    if (windowHours <= 0) windowHours = 24;
+
+    final double ELEV = TVOC_ELEVATED;
+    final double CRIT = TVOC_CRITICAL;
+
+    // ✅ Unwrap possible nested array (Object[][] -> Object[])
+    Object[] row = normalizeRow(samples.detailedStats(windowHours, ELEV, CRIT));
+    long samplesCount = toLong(safe(row, 0));
+
+    // Crude slope from halves (also unwrap)
+    Object[] halves = normalizeRow(samples.tvocHalves(windowHours));
+    Double avgFirst  = (halves != null && halves.length >= 1) ? toDouble(halves[0]) : null;
+    Double avgSecond = (halves != null && halves.length >= 2) ? toDouble(halves[1]) : null;
+    Double slope = (avgFirst != null && avgSecond != null)
+        ? round((avgSecond - avgFirst) / (windowHours / 2.0), 3) // ppb per hour
+        : null;
+
+    Double avgTvoc = round(toNumber(row, 3), 3);
+    Double minTvoc = round(toNumber(row, 4), 3);
+    Double maxTvoc = round(toNumber(row, 5), 3);
+    Double stdTvoc = round(toNumber(row, 6), 3);
+    Double avgForm = round(toNumber(row, 7), 3);
+    Double avgBenz = round(toNumber(row, 8), 3);
+
+    long cntElev = toLong(safe(row, 9));
+    long cntCrit = toLong(safe(row, 10));
+
+    double fracElev = (samplesCount > 0) ? ((double) cntElev / samplesCount) : 0.0;
+    double fracCrit = (samplesCount > 0) ? ((double) cntCrit / samplesCount) : 0.0;
+
+    String severity = classifyTvoc(avgTvoc);
+
+    Map<String, Object> out = new LinkedHashMap<>();
+    out.put("windowHours", windowHours);
+    out.put("samplesCount", samplesCount);
+    out.put("windowStart", safe(row, 1)); // timestamptz
+    out.put("windowEnd",   safe(row, 2)); // timestamptz
+
+    out.put("avg_tvoc_ppb", avgTvoc);
+    out.put("min_tvoc_ppb", minTvoc);
+    out.put("max_tvoc_ppb", maxTvoc);
+    out.put("stddev_tvoc_ppb", stdTvoc);
+    out.put("avg_formaldehyde_ppm", avgForm);
+    out.put("avg_benzene_ppm", avgBenz);
+
+    out.put("severity", severity);
+    out.put("tvoc_slope_ppb_per_hr", slope);
+    out.put("fraction_time_elevated", round(fracElev, 3));
+    out.put("fraction_time_critical", round(fracCrit, 3));
+    out.put("elevated_threshold_ppb", ELEV);
+    out.put("critical_threshold_ppb", CRIT);
+    return out;
+  }
+
+  // ---------------- helpers ----------------
+
   /** Unwrap possible nested array shape from native query */
   private static Object[] normalizeRow(Object raw) {
     if (raw == null) return new Object[0];
 
-    // Case 1: already a flat row
     if (raw instanceof Object[] arr) {
-      // If it's a single element that itself is an Object[], unwrap it
+      // Some drivers return a single row wrapped inside another Object[]
       if (arr.length == 1 && arr[0] instanceof Object[] inner) {
         return inner;
       }
       return arr;
     }
-
-    // Unexpected: single scalar (shouldn't happen for 3 columns) — return scalar as a 1-length row
-    return new Object[]{raw};
+    // Unexpected: single scalar — wrap as 1-length row
+    return new Object[]{ raw };
   }
 
-  /** Classify severity from TVOC average; null -> SAFE */
+  /** Classify severity from average TVOC */
   private static String classifyTvoc(Double avgTvoc) {
     if (avgTvoc == null) return "SAFE";
     if (avgTvoc >= TVOC_CRITICAL) return "CRITICAL";
@@ -84,30 +141,45 @@ public class MetricsService {
     return "SAFE";
   }
 
-  /** Safely extract a numeric value from a native query row; returns null on NaN or non-numeric */
+  /** Safely extract numeric from row[idx]; returns null on NaN or parse errors */
   private static Double toNumber(Object[] row, int idx) {
     if (row == null || idx < 0 || idx >= row.length) return null;
     Object v = row[idx];
     if (v == null) return null;
-
     if (v instanceof Number n) {
       double d = n.doubleValue();
       return Double.isNaN(d) ? null : d;
     }
     try {
-      double d = Double.parseDouble(v.toString());
+      double d = Double.parseDouble(String.valueOf(v));
       return Double.isNaN(d) ? null : d;
     } catch (Exception ignore) {
       return null;
     }
   }
 
-  /** Round to given decimals; returns null if input null */
+  /** Round to given decimals; returns null if input null/NaN/Inf */
   private static Double round(Double value, int decimals) {
     if (value == null) return null;
     if (Double.isNaN(value) || Double.isInfinite(value)) return null;
     if (decimals <= 0) return (double) Math.round(value);
     double scale = Math.pow(10, decimals);
     return Math.round(value * scale) / scale;
+  }
+
+  private static long toLong(Object o) {
+    if (o == null) return 0L;
+    if (o instanceof Number n) return n.longValue();
+    try { return Long.parseLong(String.valueOf(o)); } catch (Exception e) { return 0L; }
+  }
+
+  private static Double toDouble(Object o) {
+    if (o == null) return null;
+    if (o instanceof Number n) return n.doubleValue();
+    try { return Double.parseDouble(String.valueOf(o)); } catch (Exception e) { return null; }
+  }
+
+  private static Object safe(Object[] row, int idx) {
+    return (row != null && idx >= 0 && idx < row.length) ? row[idx] : null;
   }
 }
