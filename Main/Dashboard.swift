@@ -42,7 +42,7 @@ struct DashboardView: View {
                         Label("Trends", systemImage: "chart.line.uptrend.xyaxis")
                     }
 
-                ChatbotView()
+                SafetyInsightsView()
                     .tabItem {
                         Label("Chat", systemImage: "message.fill")
                     }
