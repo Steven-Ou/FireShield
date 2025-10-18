@@ -30,13 +30,9 @@
 FireShield/
 
 ├── Main/
-
 │ ├── ContentView.swift
-
 │ ├── FirestoreManager.swift
-
 │ ├── Incident.swift
-
 │ ├── MonthlySummaryView.swift
 
 │ ├── SettingsView.swift
