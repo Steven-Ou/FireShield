@@ -1,11 +1,10 @@
 import SwiftUI
 
-/// A view that provides a user interface for signing in.
-struct LoginView: View {
-    // This binding is passed from the parent view (ContentView).
-    // When we set its value to `true`, the parent view will dismiss this screen.
-    @Binding var isLoggedIn: Bool
+struct ContentView: View {
+    // This view owns the data, so we use @State
+    @State private var isLoggedIn = false
 
+    // State for the text fields and UI
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
@@ -15,7 +14,6 @@ struct LoginView: View {
         VStack(spacing: 20) {
             Spacer()
             
-            // App Icon and Title
             Image(systemName: "shield.lefthalf.filled.trianglebadge.exclamationmark")
                 .font(.system(size: 80))
                 .foregroundColor(.accentColor)
@@ -27,9 +25,9 @@ struct LoginView: View {
             Text("Sign in to track your health")
                 .foregroundColor(.secondary)
 
-            // Text fields for email and password
             VStack(spacing: 15) {
                 TextField("Email Address", text: $email)
+                    // These modifiers are for iOS to style the text field
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)
                     .padding(12)
@@ -43,7 +41,6 @@ struct LoginView: View {
             }
             .padding(.horizontal)
 
-            // Display an error message if login fails
             if !errorMessage.isEmpty {
                 Text(errorMessage)
                     .foregroundColor(.red)
@@ -51,7 +48,6 @@ struct LoginView: View {
                     .multilineTextAlignment(.center)
             }
             
-            // Login Button or Progress Indicator
             if isLoading {
                 ProgressView()
                     .padding()
@@ -72,7 +68,7 @@ struct LoginView: View {
             Spacer()
             
             Button("Don't have an account? Sign Up") {
-                // Action for signing up would go here
+                // Action for signing up
             }
             .font(.footnote)
             
@@ -81,29 +77,27 @@ struct LoginView: View {
         .padding()
     }
 
-    /// Handles the login logic.
     func handleLogin() {
         isLoading = true
         errorMessage = ""
 
-        // Basic validation to ensure fields are not empty.
         if email.isEmpty || password.isEmpty {
             errorMessage = "Please fill in both email and password."
             isLoading = false
             return
         }
         
-        // Simulate a network request for authentication.
-        // In a real app, you would make an API call to your server here.
+        // Simulate a network request
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            // For this example, we'll assume the login is always successful.
-            // If it failed, you would set `self.errorMessage`.
             isLoading = false
-            self.isLoggedIn = true // This triggers the dismissal of the login screen.
+            self.isLoggedIn = true
         }
     }
 }
 
-#Preview {
-    ContentView()
+// The preview provider for ContentView
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
