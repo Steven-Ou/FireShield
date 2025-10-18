@@ -4,25 +4,39 @@ struct TrendsView: View {
     @State private var readings: [VOCReading] = VOCReading.sampleData()
 
     var body: some View {
-        NavigationView {
+        // Use a ZStack to layer the gradient behind the content
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Weekly VOC Exposure Trends")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.top)
+                    Text("Weekly VOC Exposure")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
+                        .padding([.top, .horizontal])
 
-                    HStack(spacing: 12) {
-                        SummaryCard(title: "Avg TVOC", value: String(format: "%.0f ppb", averageTVOC()), color: .orange)
-                        SummaryCard(title: "Max TVOC", value: String(format: "%.0f ppb", maxTVOC()), color: .red)
+                    HStack(spacing: 15) {
+                        SummaryCard(title: "Avg TVOC", value: String(format: "%.0f ppb", averageTVOC()), color: .black)
+                        SummaryCard(title: "Max TVOC", value: String(format: "%.0f ppb", maxTVOC()), color: .black)
                     }
+                    .padding(.horizontal)
 
-                    HStack(spacing: 12) {
-                        SummaryCard(title: "Avg Formaldehyde", value: String(format: "%.2f ppm", averageFormaldehyde()), color: .yellow)
-                        SummaryCard(title: "Avg Benzene", value: String(format: "%.2f ppm", averageBenzene()), color: .blue)
+                    HStack(spacing: 15) {
+                        SummaryCard(title: "Avg Formaldehyde", value: String(format: "%.2f ppm", averageFormaldehyde()), color: .black)
+                        SummaryCard(title: "Avg Benzene", value: String(format: "%.2f ppm", averageBenzene()), color: .black)
                     }
+                    .padding(.horizontal)
 
-                    Divider().padding(.vertical, 10)
+                    Divider()
+                        .background(Color.white.opacity(0.5))
+                        .padding()
 
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(readings) { reading in
@@ -32,18 +46,20 @@ struct TrendsView: View {
                                 Text("Formaldehyde: \(String(format: "%.2f", reading.formaldehyde_ppm)) ppm")
                                 Text("Benzene: \(String(format: "%.2f", reading.benzene_ppm)) ppm")
                             }
+                            .foregroundColor(.black)
                             .padding()
-                            .background(Color(.systemGray6))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.ultraThinMaterial)
                             .cornerRadius(12)
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
-            .navigationTitle("Trends")
         }
     }
 
+    // Helper functions remain the same
     func averageTVOC() -> Double {
         readings.map { $0.tvoc_ppb }.reduce(0, +) / Double(readings.count)
     }
@@ -61,6 +77,7 @@ struct TrendsView: View {
     }
 }
 
+// Updated SummaryCard to use material background
 struct SummaryCard: View {
     let title: String
     let value: String
@@ -69,19 +86,21 @@ struct SummaryCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.caption)
-                .foregroundColor(.gray)
-            Text(value)
                 .font(.headline)
+                .foregroundColor(.black.opacity(0.7))
+            Text(value)
+                .font(.title2)
+                .fontWeight(.bold)
                 .foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray5))
+        .background(.ultraThinMaterial)
         .cornerRadius(10)
     }
 }
 
+// VOCReading struct remains the same
 struct VOCReading: Identifiable {
     let id = UUID()
     let date: Date
