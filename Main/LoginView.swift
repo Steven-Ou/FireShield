@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct LoginView: View {
     // This view owns the data, so we use @State
     @State private var isLoggedIn = false
     
@@ -116,7 +116,7 @@ struct ContentView: View {
 }
 
 // The preview provider for ContentView
-struct ContentView_Previews: PreviewProvider {
+struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }

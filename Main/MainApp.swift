@@ -11,7 +11,11 @@ import SwiftUI
 struct MainApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if hasCompletedOnboarding{
+                LoginView()
+            }else{
+                OnboardingView()
+            }
         }
     }
 }
