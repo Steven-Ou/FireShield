@@ -103,4 +103,6 @@ struct VOCReading: Identifiable {
     }
 }
 
-#Preview { TrendsView() }
+#Preview {
+    TrendsView()
+}

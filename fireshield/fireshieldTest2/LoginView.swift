@@ -114,7 +114,7 @@ struct LoginView: View {
 #Preview {
     let base = URL(string: "http://127.0.0.1:8080/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
-    return LoginView()
+    LoginView()
         .environmentObject(ViewRouter())
         .environmentObject(mockState)
 }

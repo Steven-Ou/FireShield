@@ -51,7 +51,7 @@ struct DashboardView: View {
 #Preview {
     let base = URL(string: "http://127.0.0.1:8080/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
-    return DashboardView(username: "Alex")
+    DashboardView(username: "Alex")
         .environmentObject(ViewRouter())
         .environmentObject(mockState)
 }

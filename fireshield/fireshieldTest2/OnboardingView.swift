@@ -69,5 +69,6 @@ struct OnboardingCardView: View {
 }
 
 #Preview {
-    OnboardingView().environmentObject(ViewRouter())
+    OnboardingView()
+        .environmentObject(ViewRouter())
 }
