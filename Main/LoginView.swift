@@ -116,8 +116,17 @@ struct LoginView: View {
 }
 
 // The preview provider for ContentView
-struct LoginView_Previews: PreviewProvider {
+struct AllPreviews_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        // Group allows multiple views
+        Group {
+            // Preview for the Onboarding screen
+            OnboardingView()
+                .previewDisplayName("Onboarding Flow")
+
+            // Preview for the Login screen
+            LoginView()
+                .previewDisplayName("Login Screen")
+        }
     }
 }
