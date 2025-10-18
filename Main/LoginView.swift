@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct LoginView: View {
-    // This view owns the data, so we use @State
-    @State private var isLoggedIn = false
+    // Add this line to receive the ViewRouter
+    @EnvironmentObject var viewRouter: ViewRouter
     
-    // State for the text fields and UI
+    @State private var isLoggedIn = false
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
@@ -12,7 +12,6 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            // Fiery gradient background that covers the whole screen
             LinearGradient(
                 gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
                 startPoint: .top,
@@ -23,27 +22,24 @@ struct LoginView: View {
             VStack(spacing: 20) {
                 Spacer()
                 
-                // New fiery icon
                 Image(systemName: "flame.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.orange)
-                // Added a shadow to lift the icon off the background
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 5)
                 
                 Text("Fire Shield")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundColor(.black) // Text color set to black
+                    .foregroundColor(.black)
                 
                 Text("Sign in to track your health")
-                    .foregroundColor(.black.opacity(0.8)) // Subtly less prominent black
+                    .foregroundColor(.black.opacity(0.8))
                 
                 VStack(spacing: 15) {
                     TextField("Email Address", text: $email)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .padding(12)
-                    // Using a semi-transparent material for the text fields
                         .background(.ultraThinMaterial)
                         .cornerRadius(10)
                     
@@ -54,20 +50,6 @@ struct LoginView: View {
                 }
                 .padding(.horizontal)
                 
-                VStack {
-                                HStack {
-                                    Button(action: {
-                                        viewRouter.goToOnboarding()
-                                    }) {
-                                        Image(systemName: "arrow.backward.circle.fill")
-                                            .font(.largeTitle)
-                                            .foregroundColor(.black.opacity(0.6))
-                                            .padding()
-                                    }
-                                    Spacer()
-                                }
-                                Spacer()
-                            }
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.white)
@@ -88,9 +70,7 @@ struct LoginView: View {
                             .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: .infinity)
-                        // Text color is now black for readability
                             .foregroundColor(.black)
-                        // The button background adapts with a material effect
                             .background(.regularMaterial)
                             .cornerRadius(10)
                     }
@@ -103,11 +83,27 @@ struct LoginView: View {
                     // Action for signing up
                 }
                 .font(.footnote)
-                .foregroundColor(.black) // Text color set to black
+                .foregroundColor(.black)
                 
                 Spacer()
             }
             .padding()
+            
+            // Go Back Button Overlay
+            VStack {
+                HStack {
+                    Button(action: {
+                        viewRouter.goToOnboarding()
+                    }) {
+                        Image(systemName: "arrow.backward.circle.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.black.opacity(0.6))
+                            .padding()
+                    }
+                    Spacer()
+                }
+                Spacer()
+            }
         }
     }
     
@@ -121,7 +117,6 @@ struct LoginView: View {
             return
         }
         
-        // Simulate a network request
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isLoading = false
             self.isLoggedIn = true
@@ -135,3 +130,4 @@ struct LoginView_Previews: PreviewProvider {
             .environmentObject(ViewRouter())
     }
 }
+
