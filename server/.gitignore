@@ -25,5 +25,8 @@ nbproject/private/
 build/
 .vscode/
 
+### VS Code ###
+.vscode/
+.env
 # Secrets - Do not commit production configuration
 application-prod.yml
