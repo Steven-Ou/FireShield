@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct LoginView: View {
-    // Add this line to receive the ViewRouter
+    // Add this line to receive the ViewRouter from the environment.
     @EnvironmentObject var viewRouter: ViewRouter
     
-    @State private var isLoggedIn = false
+    // Create an instance of our new authentication service.
+    private let authService = AuthService()
+    
+    // State for the text fields and UI
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
@@ -88,7 +91,7 @@ struct LoginView: View {
                 Spacer()
             }
             .padding()
-
+            
             // Go Back Button Overlay
             VStack {
                 HStack {
@@ -107,23 +110,34 @@ struct LoginView: View {
         }
     }
     
+    // This function is now async to handle the network request.
     func handleLogin() {
         isLoading = true
         errorMessage = ""
         
-        if email.isEmpty || password.isEmpty {
-            errorMessage = "Please fill in both email and password."
-            isLoading = false
-            return
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isLoading = false
-            self.isLoggedIn = true
+        // Use a Task to run our asynchronous network call.
+        Task {
+            do {
+                let authResponse = try await authService.login(email: email, password: password)
+                
+                // On success, update the UI on the main thread.
+                DispatchQueue.main.async {
+                    isLoading = false
+                    // Tell the ViewRouter that login was successful.
+                    viewRouter.loginSuccess(userName: authResponse.displayName)
+                }
+            } catch {
+                // On failure, update the UI on the main thread.
+                DispatchQueue.main.async {
+                    isLoading = false
+                    errorMessage = "Invalid email or password. Please try again."
+                }
+            }
         }
     }
 }
 
+// The preview provider remains the same.
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()

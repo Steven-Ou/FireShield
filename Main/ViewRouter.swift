@@ -3,13 +3,14 @@ import Combine
 
 class ViewRouter: ObservableObject {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+    
     @Published var currentPage: Page
+    
+    // Store the logged-in user's name to pass to the dashboard.
+    @Published var loggedInUserName: String?
 
     init() {
-        // Give currentPage a default value before using other properties.
         self.currentPage = .onboarding
-        
-        // Now, check the saved value and update currentPage if needed.
         if hasCompletedOnboarding {
             self.currentPage = .login
         }
@@ -22,6 +23,14 @@ class ViewRouter: ObservableObject {
         }
     }
     
+    // This function is called upon a successful login.
+    func loginSuccess(userName: String) {
+        loggedInUserName = userName
+        withAnimation {
+            currentPage = .dashboard
+        }
+    }
+    
     func goToOnboarding() {
         hasCompletedOnboarding = false
         withAnimation {
@@ -30,7 +39,10 @@ class ViewRouter: ObservableObject {
     }
 }
 
+// Add the new .dashboard case to our Page enum.
 enum Page {
     case onboarding
     case login
+    case dashboard
 }
+
