@@ -98,7 +98,7 @@ struct OnboardingCardView: View{
                 .padding(.top, 20)
                 .padding(.horizontal, 40)
             }
-        }
+        }.padding()
     )
 }
 
