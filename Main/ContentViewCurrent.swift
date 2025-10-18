@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct ContentViewCurrent: View {
     @State private var isLoggedIn = false
     @State private var email = ""
     @State private var password = ""
@@ -125,5 +125,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentViewCurrent()
 }
