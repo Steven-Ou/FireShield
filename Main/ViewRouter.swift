@@ -1,26 +1,20 @@
 import SwiftUI
 import Combine
 
-// This class will now be the single source of truth for navigation.
 class ViewRouter: ObservableObject {
-    
-    // 1. The router now reads and writes to AppStorage.
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
-
-    // 2. The current page is determined by the stored value when the app starts.
     @Published var currentPage: Page
 
     init() {
-        // First, initialize all properties. Give currentPage a default value.
-        currentPage = .onboarding
+        // Give currentPage a default value before using other properties.
+        self.currentPage = .onboarding
         
-        // Now that all properties are initialized, we can safely use them.
+        // Now, check the saved value and update currentPage if needed.
         if hasCompletedOnboarding {
-            currentPage = .login
+            self.currentPage = .login
         }
     }
     
-    // 3. This function transitions to the login page AND saves the state permanently.
     func completeOnboarding() {
         hasCompletedOnboarding = true
         withAnimation {
@@ -28,7 +22,6 @@ class ViewRouter: ObservableObject {
         }
     }
     
-    // 4. (Optional) A helper for development to reset the onboarding flow.
     func goToOnboarding() {
         hasCompletedOnboarding = false
         withAnimation {
@@ -37,9 +30,7 @@ class ViewRouter: ObservableObject {
     }
 }
 
-// An enum to define the different pages in our app.
 enum Page {
     case onboarding
     case login
 }
-
