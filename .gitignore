@@ -1,33 +1,74 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Xcode
+#
+# gitignore contributors: remember to keep this file platform-agnostic
+# gitignore contributors: remember to update the CocoaPods section below
+#
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.resolved
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+.DS_Store
+/build/
+/.swiftpm/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+# Pods/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
 
-### VS Code ###
-.vscode/
+Carthage/Build/
+
+# Accio
+#
+# Add this line if you want to avoid checking in source code from Accio dependencies.
+# Dependencies/
+
+Dependencies/Build/
+
+# fastlane
+#
+# It is recommended to not store sensitive data in this file.
+# Instead, use Vcert to store certificates and provisioning profiles.
+#
+# fastlane/report.xml
+# fastlane/Preview.html
+# fastlane/screenshots
+# fastlane/test_output
+# fastlane/certificates
+
+# Code Injection
+#
+# After new code injection, received source changes will be injected into the
+# project everyday. This can result in cluttered temporary files.
+#
+# /injected_files
+
+# SwiftPlaygrounds
+#
+# Swift Playgrounds generate a folder within the project directory to hold
+# generated sources. They can be safely ignored.
+#
+# *~.playground
+# *~.swiftpm
+
+# User-specific files
+*.xcuserdatad
+*.xccheckout
+*.xcscmblueprint
+xcuserdata/
+
+# Build generated
+DerivedData/
+*.hmap
+*.ipa
+*.app
