@@ -18,7 +18,7 @@ struct ContentView: View {
                 .font(.system(size: 80))
                 .foregroundColor(.accentColor)
             
-            Text("Project Phoenix")
+            Text("Fire Shield")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
