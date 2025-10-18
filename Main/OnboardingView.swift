@@ -102,4 +102,8 @@ struct OnboardingCardView: View{
     )
 }
 
-
+struct OnboardingView_Previews: PreviewProvider{
+    static var previews: some View{
+        OnboardingView()
+    }
+}
