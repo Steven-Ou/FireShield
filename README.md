@@ -28,11 +28,17 @@
 ## 📁 Project Structure
 
 FireShield/
+
 ├── Main/
+
 │ ├── ContentView.swift
+
 │ ├── FirestoreManager.swift
+
 │ ├── Incident.swift
+
 │ ├── MonthlySummaryView.swift
+
 │ ├── SettingsView.swift
 │ ├── StatisticsView.swift
 │ ├── ToxicExposureView.swift
