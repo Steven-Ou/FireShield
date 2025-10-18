@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct ContentViewFinal: View {
     // This view owns the data, so we use @State
     @State private var isLoggedIn = false
 
