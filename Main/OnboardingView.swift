@@ -25,6 +25,18 @@ struct OnboardingView: View{
                 title: "FireShield VOC",
                 description: "Our platform helps you visualize and understand your exposure to cancer-causing VOCs, making the invisible visible."
             )
+            //How It Works & Getting Started 
+            OnboardingCardView(
+                systemImageName: "chart.bar.xaxis",
+                title: "Track Your Exposure",
+                description: "View real-time (or simulated) exposure data, get alerts for elevated readings, and track trends over time to stay informed.",
+                isLastPage: true,
+                onGetStarted: {
+                    // When the "Get Started" button is tapped,
+                    // we set our AppStorage variable to true.
+                    hasCompletedOnboarding = true
+                }
+            )
         }
     )
 }
