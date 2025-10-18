@@ -1,46 +1,42 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- enable uuid gen if needed
+create extension if not exists pgcrypto;
 
--- Users & auth
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  display_name TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'USER',
-  created_at TIMESTAMPTZ DEFAULT now()
+create table if not exists users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  password_hash text not null,
+  display_name text not null,
+  role text not null default 'USER',
+  created_at timestamptz not null default now()
 );
 
--- API devices
-CREATE TABLE devices (
-  id UUID PRIMARY KEY,
-  name TEXT NOT NULL,
-  api_key TEXT NOT NULL UNIQUE,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  last_seen TIMESTAMPTZ
+create table if not exists devices (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  device_key text not null unique,
+  owner_id uuid references users(id) on delete set null,
+  created_at timestamptz not null default now()
 );
 
--- Time series samples
-CREATE TABLE samples (
-  device_id UUID NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  ts TIMESTAMPTZ NOT NULL,
-  tvoc_ppb REAL,
-  voc_index REAL,
-  eco2_ppm REAL,
-  hum_rel REAL,
-  temp_c REAL,
-  formaldehyde_ppm REAL,
-  benzene_ppm REAL,
-  raw JSONB,
-  PRIMARY KEY (device_id, ts)
+create table if not exists samples (
+  id bigserial primary key,
+  device_id uuid not null references devices(id) on delete cascade,
+  ts timestamptz not null,
+  tvoc_ppb double precision,
+  voc_index double precision,
+  eco2_ppm double precision,
+  hum_rel double precision,
+  temp_c double precision,
+  formaldehyde_ppm double precision,
+  benzene_ppm double precision,
+  created_at timestamptz not null default now()
 );
-CREATE INDEX samples_device_ts_idx ON samples (device_id, ts DESC);
+create index if not exists idx_samples_device_ts on samples(device_id, ts desc);
 
--- Alerts
-CREATE TABLE alerts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  device_id UUID NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
-  ts TIMESTAMPTZ NOT NULL,
-  severity TEXT NOT NULL,
-  message TEXT,
-  details JSONB
+create table if not exists alerts (
+  id bigserial primary key,
+  device_id uuid not null references devices(id) on delete cascade,
+  level text not null,   -- INFO/WARN/CRITICAL
+  message text not null,
+  ts timestamptz not null default now()
 );
