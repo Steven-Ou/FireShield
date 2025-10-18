@@ -1,93 +1,101 @@
 import SwiftUI
-import Charts // optional: only if you plan to use charts later
 
 struct HomeView: View {
-    @State private var tvoc: Double = 120.0
-    @State private var formaldehyde: Double = 0.04
-    @State private var benzene: Double = 0.01
-    @State private var airQualityStatus: String = "Safe"
+    @State private var tvoc: Double = 450.0
+    @State private var formaldehyde: Double = 0.08
+    @State private var benzene: Double = 0.03
+    @State private var airQualityStatus: String = "Elevated"
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                
-                // 🔥 App header
-                Text("Air Quality Summary")
+                Text("Live Summary")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundColor(.red)
-                    .padding(.top, 10)
+                    .foregroundColor(.white)
+                    .shadow(radius: 2)
+                    .padding([.top, .horizontal])
                 
-                // 🧾 Cards showing data metrics
                 HStack(spacing: 15) {
                     MetricCard(title: "TVOC", value: "\(Int(tvoc)) ppb", color: .orange)
-                    MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .yellow)
+                    MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .yellow)
                 }
+                .padding(.horizontal)
                 
                 HStack(spacing: 15) {
-                    MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .blue)
-                    MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .red)
+                    MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .white)
+                    MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .white)
                 }
+                .padding(.horizontal)
                 
-                // 📈 Graph placeholder (to add simulated data chart later)
                 VStack(alignment: .leading) {
-                    Text("24-hour Exposure Trend")
+                    Text("24-Hour Exposure Trend")
                         .font(.headline)
-                        .padding(.bottom, 5)
+                        .foregroundColor(.white)
+                        .shadow(radius: 1)
+                        .padding([.top, .horizontal])
                     
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(Color(.systemGray6))
+                        .fill(.regularMaterial)
                         .frame(height: 180)
                         .overlay(
                             Text("Graph coming soon...")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.black.opacity(0.6))
                         )
+                        .padding(.horizontal)
                 }
-                .padding(.top, 10)
                 
-                // 🚨 Alert section (for elevated VOCs)
-                if tvoc > 800 {
-                    HStack {
+                // Alert section for elevated VOCs
+                if tvoc > 400 {
+                    HStack(spacing: 15) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.yellow)
-                        Text("High VOC levels detected! Move to fresh air immediately.")
-                            .font(.subheadline)
-                            .foregroundColor(.red)
+                            .font(.title)
+                        VStack(alignment: .leading) {
+                            Text("High VOC Levels Detected")
+                                .fontWeight(.bold)
+                            Text("Consider increasing ventilation and checking gear.")
+                                .font(.subheadline)
+                        }
+                        .foregroundColor(.white)
                     }
                     .padding()
-                    .background(Color(.systemRed).opacity(0.1))
-                    .cornerRadius(10)
+                    .background(.black.opacity(0.4))
+                    .cornerRadius(15)
+                    .padding(.horizontal)
                 }
+                
+                Spacer()
             }
-            .padding()
         }
     }
 }
 
-// MARK: - MetricCard subview
+// Redesigned MetricCard to use the material effect
 struct MetricCard: View {
     var title: String
     var value: String
     var color: Color
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 5) {
             Text(title)
                 .font(.headline)
-                .foregroundColor(.gray)
+                .foregroundColor(.black.opacity(0.7))
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(color)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color.white)
+        .background(.ultraThinMaterial)
         .cornerRadius(15)
-        .shadow(radius: 3)
     }
 }
 
-#Preview {
-    HomeView()
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView()
+    }
 }
