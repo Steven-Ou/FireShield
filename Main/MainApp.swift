@@ -2,18 +2,29 @@ import SwiftUI
 
 @main
 struct MainApp: App {
-    // This property wrapper reads the value we save in OnboardingView.
-    // It will be 'false' by default.
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    // Create an instance of our ViewRouter that the whole app can use.
+    @StateObject var viewRouter = ViewRouter()
     
     var body: some Scene {
         WindowGroup {
-            // If the user has completed onboarding, show the LoginView.
-            // Otherwise, show the OnboardingView.
-            if hasCompletedOnboarding {
-                LoginView()
-            } else {
+            // Use a switch statement to show the correct view based on the router's state.
+            switch viewRouter.currentPage {
+            case .onboarding:
                 OnboardingView()
+                    .environmentObject(viewRouter)
+            case .login:
+                LoginView()
+                    .environmentObject(viewRouter)
+            case .dashboard:
+                // When logged in, show the DashboardView.
+                // We use an `if let` to safely unwrap the user's name.
+                if let userName = viewRouter.loggedInUserName {
+                    DashboardView(username: userName)
+                } else {
+                    // Fallback to login if the username is somehow nil
+                    LoginView()
+                        .environmentObject(viewRouter)
+                }
             }
         }
     }
