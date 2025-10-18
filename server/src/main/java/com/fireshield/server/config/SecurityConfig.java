@@ -1,66 +1,62 @@
+// config/SecurityConfig.java
 package com.fireshield.server.config;
 
-import com.fireshield.server.security.JwtService;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.fireshield.server.repo.DeviceRepository;
+import com.fireshield.server.service.JwtService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.cors.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
+  private final JwtService jwt;
+  private final DeviceRepository devices;
+  private final String ingestHeader;
+  private final List<String> allowedOrigins;
+
+  public SecurityConfig(
+      JwtService jwt, DeviceRepository devices,
+      @Value("${app.ingest.device-header}") String ingestHeader,
+      @Value("${app.cors.allowed-origins}") String allowedOriginsCsv
+  ) {
+    this.jwt = jwt; this.devices = devices; this.ingestHeader = ingestHeader;
+    this.allowedOrigins = List.of(allowedOriginsCsv.split("\\s*,\\s*"));
+  }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> {}) // enable default CORS
-        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsSource()))
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(reg -> reg
-            .requestMatchers("/actuator/**", "/health").permitAll()
-            .requestMatchers("/auth/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/samples").permitAll() // device ingest via X-Device-Key
+            .requestMatchers("/health", "/actuator/health").permitAll()
+            .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/samples").permitAll()   // guarded by DeviceKeyFilter
             .anyRequest().authenticated()
-        );
-
-    http.addFilterBefore(new JwtAuthFilter(jwt), UsernamePasswordAuthenticationFilter.class);
+        )
+        .addFilterBefore(new DeviceKeyFilter(devices, ingestHeader),
+            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new JwtAuthFilter(jwt),
+            org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
-  static class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtService jwt;
-    JwtAuthFilter(JwtService jwt) { this.jwt = jwt; }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest req,
-                                    HttpServletResponse res,
-                                    FilterChain chain) throws ServletException, IOException {
-      var auth = req.getHeader("Authorization");
-      if (auth != null && auth.startsWith("Bearer ")) {
-        try {
-          Claims claims = jwt.parse(auth.substring(7));
-          String sub = claims.getSubject();
-          String role = claims.get("role", String.class);
-          var authToken = new UsernamePasswordAuthenticationToken(
-              sub, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
-          SecurityContextHolder.getContext().setAuthentication(authToken);
-        } catch (Exception ignored) {}
-      }
-      chain.doFilter(req, res);
-    }
+  private CorsConfigurationSource corsSource() {
+    CorsConfiguration cfg = new CorsConfiguration();
+    cfg.setAllowedOrigins(allowedOrigins);
+    cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+    cfg.setAllowedHeaders(List.of("*"));
+    cfg.setAllowCredentials(true);
+    UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+    src.registerCorsConfiguration("/**", cfg);
+    return src;
   }
 }

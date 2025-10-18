@@ -1,13 +1,8 @@
-server:
-  port: 8080
-  servlet:
-    context-path: /api/v1
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fireshield
-    username: app
-    password: app
+    url: jdbc:postgresql://localhost:5432/fireschild
+    username: fs
+    password: fs
   jpa:
     hibernate:
       ddl-auto: validate
@@ -19,14 +14,20 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+server:
+  port: 8080
 
-security:
+logging:
+  level:
+    root: info
+    org.springframework.security: info
+    org.hibernate.SQL: warn
+
+app:
   jwt:
-    secret: "change-this-to-a-very-long-random-secret"
-    issuer: "fireshield"
-    ttlMinutes: 120
+    secret: "CHANGE_ME_to_a_very_long_random_secret_value_at_least_64_bytes"
+    expirySeconds: 7200
+  cors:
+    allowed-origins: "http://localhost:3000, http://127.0.0.1:3000, http://localhost:8080"
+  ingest:
+    device-header: "X-Device-Key"
