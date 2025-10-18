@@ -15,6 +15,13 @@ struct AppFlowPreview: View {
         case .login:
             LoginView()
                 .environmentObject(viewRouter)
+        case .dashboard:
+            if let userName = viewRouter.loggedInUserName {
+                DashboardView(username: userName)
+            } else {
+                // For the preview, we can just show a sample dashboard
+                DashboardView(username: "Test User")
+            }
         }
     }
 }
@@ -25,3 +32,4 @@ struct AppFlowPreview_Previews: PreviewProvider {
         AppFlowPreview()
     }
 }
+
