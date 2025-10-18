@@ -81,6 +81,23 @@ struct OnboardingCardView: View{
                 .multilineTextAlignment(.center)
                 .foregroundColor(.white.opacity(0.9))
                 .padding(.horizontal)
+            
+            if isLastPage {
+                Button(action: {
+                    onGetStarted?()
+                }) {
+                    Text("Get Started")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.black)
+                        .background(.regularMaterial)
+                        .cornerRadius(10)
+                }
+                .padding(.top, 20)
+                .padding(.horizontal, 40)
+            }
         }
     )
 }
