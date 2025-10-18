@@ -52,7 +52,26 @@ struct OnboardingView: View{
 struct OnboardingCardView: View{
     let systemImageName :String
     let title: String
-    let description: Stirng
+    let description: String
     var isLastPage:Bool = false
     let onGetStarted: (()-> Void)?
+    
+    init(systemImageName: String, title: String, description: String, isLastPage: Bool = false, onGetStarted: (() -> Void)? = nil) {
+        self.systemImageName = systemImageName
+        self.title = title
+        self.description = description
+        self.isLastPage = isLastPage
+        self.onGetStarted = onGetStarted
+    }
+    
+    var body: some View(
+        VStack(spacing:20){
+            Image(systemName: systemImageName)
+                .font(.system(size: 80))
+                .foregroundColor(.white)
+                .shadow(radius: 5)
+        }
+    )
 }
+
+
