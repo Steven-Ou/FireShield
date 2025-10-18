@@ -88,7 +88,7 @@ struct LoginView: View {
                 Spacer()
             }
             .padding()
-            
+
             // Go Back Button Overlay
             VStack {
                 HStack {

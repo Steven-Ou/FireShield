@@ -17,14 +17,15 @@ struct HomeView: View {
                     .padding([.top, .horizontal])
                 
                 HStack(spacing: 15) {
-                    MetricCard(title: "TVOC", value: "\(Int(tvoc)) ppb", color: .orange)
-                    MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .yellow)
+                    MetricCard(title: "TVOC", value: "\(Int(tvoc)) ppb", color: .black)
+                    MetricCard(title: "Status", value: airQualityStatus, color: airQualityStatus == "Safe" ? .green : .red)
                 }
                 .padding(.horizontal)
                 
                 HStack(spacing: 15) {
-                    MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .white)
-                    MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .white)
+                    // Changed the color from .white to .black for better contrast
+                    MetricCard(title: "Formaldehyde", value: String(format: "%.2f ppm", formaldehyde), color: .black)
+                    MetricCard(title: "Benzene", value: String(format: "%.2f ppm", benzene), color: .black)
                 }
                 .padding(.horizontal)
                 
@@ -85,7 +86,7 @@ struct MetricCard: View {
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(color)
+                .foregroundColor(color) // The color is now passed in and respects the new choice
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -96,6 +97,17 @@ struct MetricCard: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        // Wrap in a ZStack with the gradient for an accurate preview
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            HomeView()
+        }
     }
 }
+
