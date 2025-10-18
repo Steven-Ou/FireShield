@@ -1,4 +1,3 @@
--- V2__AddTestUser.sql
 -- This script adds a temporary user for development and testing purposes.
 -- The password is 'password123' and is hashed using BCrypt.
 -- You can generate new hashes for different passwords using an online BCrypt generator.
@@ -11,3 +10,4 @@ VALUES (
     'USER'
 )
 ON CONFLICT (email) DO NOTHING; -- This ensures the script doesn't fail if the user already exists.
+
