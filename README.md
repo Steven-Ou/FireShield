@@ -30,27 +30,16 @@
 FireShield/
 
 ├── Main/
-
 │ ├── ContentView.swift
-
 │ ├── FirestoreManager.swift
-
 │ ├── Incident.swift
-
 │ ├── MonthlySummaryView.swift
-
 │ ├── SettingsView.swift
-
 │ ├── StatisticsView.swift
-
 │ ├── ToxicExposureView.swift
-
 │ ├── User.swift
-
 │ └── FireShieldApp.swift
-
 └── Assets/
-
 └── firesheild_logo.png (placeholder)
 
 
