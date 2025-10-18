@@ -118,6 +118,6 @@ struct LoginView: View {
 // The preview provider for ContentView
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        LoginView()
     }
 }
