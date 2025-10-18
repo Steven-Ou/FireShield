@@ -11,10 +11,12 @@ class ViewRouter: ObservableObject {
     @Published var currentPage: Page
 
     init() {
+        // First, initialize all properties. Give currentPage a default value.
+        currentPage = .onboarding
+        
+        // Now that all properties are initialized, we can safely use them.
         if hasCompletedOnboarding {
             currentPage = .login
-        } else {
-            currentPage = .onboarding
         }
     }
     
@@ -40,3 +42,4 @@ enum Page {
     case onboarding
     case login
 }
+

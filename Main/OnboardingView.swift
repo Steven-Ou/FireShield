@@ -1,56 +1,50 @@
 import SwiftUI
 
-// This view manages the entire onboarding experience.
 struct OnboardingView: View {
-    // A property wrapper that reads and writes a value to UserDefaults.
-    // We'll set this to true when onboarding is complete.
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    // Get the ViewRouter from the environment.
+    @EnvironmentObject var viewRouter: ViewRouter
 
     var body: some View {
-        // TabView with PageTabViewStyle creates a swipeable interface.
         TabView {
-            // Page 1: The Problem
+            // Card 1: The Problem
             OnboardingCardView(
                 systemImageName: "exclamationmark.triangle.fill",
                 title: "The Invisible Threat",
                 description: "After a fire, gear and stations remain contaminated with toxic Volatile Organic Compounds (VOCs) like benzene and formaldehyde, posing long-term cancer risks."
             )
             
-            // Page 2: Our Solution
+            // Card 2: The Solution
             OnboardingCardView(
                 systemImageName: "shield.lefthalf.filled",
                 title: "FireShield VOC",
                 description: "Our platform helps you visualize and understand your exposure to cancer-causing VOCs, making the invisible visible."
             )
-
-            // Page 3: How It Works & Get Started
+            
+            // Card 3: How It Works & Getting Started
             OnboardingCardView(
                 systemImageName: "chart.bar.xaxis",
                 title: "Track Your Exposure",
                 description: "View real-time (or simulated) exposure data, get alerts for elevated readings, and track trends over time to stay informed.",
                 isLastPage: true,
                 onGetStarted: {
-                    // When the "Get Started" button is tapped,
-                    // we set our AppStorage variable to true.
-                    hasCompletedOnboarding = true
+                    // When tapped, call the router's function to complete the flow.
+                    viewRouter.completeOnboarding()
                 }
             )
         }
-        .tabViewStyle(.page(indexDisplayMode: .always)) // Enables the swipeable pages with a dot indicator.
+        .tabViewStyle(.page(indexDisplayMode: .always))
         .background(
-            // Consistent fiery gradient background
             LinearGradient(
                 gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
                 startPoint: .top,
                 endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            ).ignoresSafeArea()
         )
     }
 }
 
+// (The OnboardingCardView and Previews structs do not need to be changed.)
 
-// A reusable view for each individual onboarding card.
 struct OnboardingCardView: View {
     let systemImageName: String
     let title: String
@@ -108,6 +102,7 @@ struct OnboardingCardView: View {
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
         OnboardingView()
+            .environmentObject(ViewRouter()) // Add this for the preview to work
     }
 }
 

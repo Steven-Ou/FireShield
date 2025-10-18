@@ -54,6 +54,20 @@ struct LoginView: View {
                 }
                 .padding(.horizontal)
                 
+                VStack {
+                                HStack {
+                                    Button(action: {
+                                        viewRouter.goToOnboarding()
+                                    }) {
+                                        Image(systemName: "arrow.backward.circle.fill")
+                                            .font(.largeTitle)
+                                            .foregroundColor(.black.opacity(0.6))
+                                            .padding()
+                                    }
+                                    Spacer()
+                                }
+                                Spacer()
+                            }
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.white)
@@ -115,18 +129,9 @@ struct LoginView: View {
     }
 }
 
-// The preview provider for ContentView
-struct AllPreviews_Previews: PreviewProvider {
+struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        // Group allows multiple views
-        Group {
-            // Preview for the Onboarding screen
-            OnboardingView()
-                .previewDisplayName("Onboarding Flow")
-
-            // Preview for the Login screen
-            LoginView()
-                .previewDisplayName("Login Screen")
-        }
+        LoginView()
+            .environmentObject(ViewRouter())
     }
 }
