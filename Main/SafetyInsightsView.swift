@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SafetyInsightsView: View {
-    // This view should get the ViewRouter from the environment, not AppState
+    // This now correctly uses the ViewRouter from the environment
     @EnvironmentObject var viewRouter: ViewRouter
     
     var body: some View {
