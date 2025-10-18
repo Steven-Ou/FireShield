@@ -25,7 +25,7 @@ struct OnboardingView: View{
                 title: "FireShield VOC",
                 description: "Our platform helps you visualize and understand your exposure to cancer-causing VOCs, making the invisible visible."
             )
-            //How It Works & Getting Started 
+            //How It Works & Getting Started
             OnboardingCardView(
                 systemImageName: "chart.bar.xaxis",
                 title: "Track Your Exposure",
@@ -38,6 +38,21 @@ struct OnboardingView: View{
                 }
             )
         }
+            .tabViewStyle(.page(indexDisplayMode:.always))
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors:[Color.red, Color.orange, Color.yellow]),
+                    startPoint:.top,
+                    endpoint:.bottom
+                ).ignoresSafeArea()
+            )
     )
 }
 
+struct OnboardingCardView: View{
+    let systemImageName :String
+    let title: String
+    let description: Stirng
+    var isLastPage:Bool = false
+    let onGetStarted: (()-> Void)?
+}
