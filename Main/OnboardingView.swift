@@ -70,6 +70,17 @@ struct OnboardingCardView: View{
                 .font(.system(size: 80))
                 .foregroundColor(.white)
                 .shadow(radius: 5)
+            
+            Text(title)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+            
+            Text(description)
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.white.opacity(0.9))
+                .padding(.horizontal)
         }
     )
 }
