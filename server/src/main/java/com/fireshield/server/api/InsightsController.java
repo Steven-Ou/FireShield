@@ -1,6 +1,6 @@
-// src/main/java/com/fireshield/server/api/InsightsController.java
 package com.fireshield.server.api;
 
+import com.fireshield.server.api.dto.InsightsReport;
 import com.fireshield.server.service.InsightsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +16,15 @@ public class InsightsController {
     this.insights = insights;
   }
 
-  // GET /insights or /insights?hours=168
+  // Existing: GET /insights or /insights?hours=168
   @GetMapping
   public Map<String,Object> insights(@RequestParam(name="hours", required=false) Integer hours) {
     return insights.generateInsights(hours);
+  }
+
+  // NEW: GET /insights/report or /insights/report?hours=24
+  @GetMapping("/report")
+  public InsightsReport awarenessReport(@RequestParam(name="hours", required=false) Integer hours) {
+    return insights.generateAwarenessReport(hours);
   }
 }
