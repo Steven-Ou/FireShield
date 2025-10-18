@@ -110,6 +110,9 @@ struct VOCReading: Identifiable {
     }
 }
 
-#Preview {
-    TrendsView()
+struct TrendsView_Previews: PreviewProvider {
+    static var previews: some View {
+        TrendsView()
+    }
 }
+
