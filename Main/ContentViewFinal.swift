@@ -3,6 +3,8 @@ import SwiftUI
 struct ContentViewFinal: View {
     // This view owns the data, so we use @State
     @State private var isLoggedIn = false
+    @State private var currentPage = 0
+
 
     // State for the text fields and UI
     @State private var email = ""
@@ -33,10 +35,15 @@ struct ContentViewFinal: View {
                 Text("Fire Shield")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundColor(.black) // Text color set to black
-                
+                    .foregroundColor(.black)
+
+                // Insert the slider here
+                OnboardingView(currentPage: $currentPage)
+                    .frame(height: 300)
+                    .padding(.vertical, 10)
+
                 Text("Sign in to track your health")
-                    .foregroundColor(.black.opacity(0.8)) // Subtly less prominent black
+                    .foregroundColor(.black.opacity(0.8))
 
                 VStack(spacing: 15) {
                     TextField("Email Address", text: $email)
@@ -118,6 +125,6 @@ struct ContentViewFinal: View {
 // The preview provider for ContentView
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentViewFinal()
     }
 }

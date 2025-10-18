@@ -1,69 +1,126 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showLogin = false
-    @State private var showSignup = false
-    @State private var currentPage = 0
-
-    let slides = [
-        "Welcome to FireShield — protecting firefighters from invisible risks.",
-        "Monitor your VOC exposure in real time after every call.",
-        "Track long-term exposure trends and learn safe decon practices.",
-        "Join the mission to keep our heroes safe from toxic environments."
-    ]
-
+    @State private var isLoggedIn = false
+    @State private var email = ""
+    @State private var password = ""
+    @State private var errorMessage = ""
+    @State private var isLoading = false
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                // 🔥 Header
-                Text("🔥 FireShield")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
-                    .padding(.top, 50)
-
-                Spacer()
-
-                // 🖼️ Slide content
-                TabView(selection: $currentPage) {
-                    ForEach(0..<slides.count, id: \.self) { index in
-                        Text(slides[index])
-                            .font(.title3)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .tag(index)
+        NavigationStack {
+            ZStack {
+                // 🔥 Fiery gradient background
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                VStack {
+                    Spacer()
+                    
+                    // 🔥 Fire icon and header text
+                    Image(systemName: "flame.fill")
+                        .font(.system(size: 80))
+                        .foregroundColor(.orange)
+                        .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 5)
+                        .padding(.bottom, 10)
+                    
+                    Text("Fire Shield")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                    
+                    Text("Your safety, monitored in real time.")
+                        .foregroundColor(.black.opacity(0.8))
+                        .padding(.bottom, 30)
+                    
+                    // 🧱 Login fields
+                    VStack(spacing: 15) {
+                        TextField("Email Address", text: $email)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .padding(12)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(10)
+                        
+                        SecureField("Password", text: $password)
+                            .padding(12)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(10)
                     }
-                }
-                .tabViewStyle(PageTabViewStyle())
-                .frame(height: 300)
-
-                Spacer()
-
-                // 🔘 Buttons
-                VStack(spacing: 15) {
-                    NavigationLink(destination: LoginView()) {
-                        Text("Log In")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red)
+                    .padding(.horizontal)
+                    
+                    if !errorMessage.isEmpty {
+                        Text(errorMessage)
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .font(.caption)
+                            .multilineTextAlignment(.center)
+                            .padding(8)
+                            .background(.black.opacity(0.5))
+                            .cornerRadius(8)
+                            .padding(.top, 8)
                     }
-
-                    NavigationLink(destination: SignupView()) {
-                        Text("Sign Up")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.gray.opacity(0.2))
-                            .foregroundColor(.red)
-                            .cornerRadius(10)
+                    
+                    // 🧭 Buttons aligned your way — login above sign-up
+                    VStack(spacing: 15) {
+                        if isLoading {
+                            ProgressView()
+                                .padding()
+                        } else {
+                            Button(action: handleLogin) {
+                                Text("Log In")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundColor(.black)
+                                    .background(.regularMaterial)
+                                    .cornerRadius(10)
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        // ✅ Sign up button in your preferred spot (below Log In)
+                        NavigationLink(destination: SignUpView()) {
+                            Text("Don’t have an account? Sign Up")
+                                .font(.footnote)
+                                .foregroundColor(.black)
+                        }
                     }
+                    .padding(.top, 20)
+                    
+                    Spacer()
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 40)
+                .padding()
             }
-            .navigationBarHidden(true)
+            // Navigate to Dashboard after login
+            .navigationDestination(isPresented: $isLoggedIn) {
+                DashboardView(username: extractUsername(from: email))
+            }
         }
+    }
+    
+    func handleLogin() {
+        isLoading = true
+        errorMessage = ""
+        
+        if email.isEmpty || password.isEmpty {
+            errorMessage = "Please fill in both email and password."
+            isLoading = false
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            isLoading = false
+            self.isLoggedIn = true
+        }
+    }
+    
+    func extractUsername(from email: String) -> String {
+        email.split(separator: "@").first.map(String.init) ?? "User"
     }
 }
 
