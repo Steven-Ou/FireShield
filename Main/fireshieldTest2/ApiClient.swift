@@ -10,7 +10,7 @@ final class ApiClient {
             else { FSKeychain.delete(key) }
         }
     }
-
+    
     init(baseURL: URL) {
         self.baseURL = baseURL
         if let data = FSKeychain.get("fireshield.jwt"),
@@ -18,54 +18,70 @@ final class ApiClient {
             self.token = t
         }
     }
-
+    
     // MARK: Auth
     func login(email: String, password: String) async throws -> AuthResponse {
         struct Body: Encodable { let email: String; let password: String }
         let body = Body(email: email, password: password)
         return try await requestWithBody("auth/login", method: "POST", body: body, auth: false)
     }
-
+    
     // MARK: Insights
     func fetchReport(hours: Int = 24) async throws -> InsightsReport {
         try await requestNoBody("insights/report?hours=\(hours)", method: "GET", auth: true)
     }
-
-    // MARK: Core requests (split overloads to avoid generic inference errors)
+    
+    // MARK: Core requests with Retry Logic
     private func requestNoBody<T: Decodable>(_ path: String, method: String, auth: Bool) async throws -> T {
-        var url = baseURL; url.append(path: path)
-        var req = URLRequest(url: url, timeoutInterval: 20)
-        req.httpMethod = method
-        if auth, let token { req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
-
-        let (data, resp) = try await URLSession.shared.data(for: req)
-        guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            if (resp as? HTTPURLResponse)?.statusCode == 401 { throw AuthError.unauthorized }
-            throw URLError(.badServerResponse)
+        for _ in 1...2 { // Try up to 2 times
+            do {
+                var url = baseURL; url.append(path: path)
+                var req = URLRequest(url: url, timeoutInterval: 60) // Increased timeout
+                req.httpMethod = method
+                if auth, let token { req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+                
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                    if (resp as? HTTPURLResponse)?.statusCode == 401 { throw AuthError.unauthorized }
+                    throw URLError(.badServerResponse)
+                }
+                return try JSONDecoder().decode(T.self, from: data)
+            } catch {
+                // If the first attempt fails, the loop will continue for the second try.
+                // If the second try also fails, this error will be thrown.
+                continue
+            }
         }
-        return try JSONDecoder().decode(T.self, from: data)
+        throw URLError(.timedOut) // Or a more specific error if you prefer
     }
-
+    
     private func requestWithBody<T: Decodable, B: Encodable>(_ path: String, method: String, body: B, auth: Bool) async throws -> T {
-        var url = baseURL; url.append(path: path)
-        var req = URLRequest(url: url, timeoutInterval: 20)
-        req.httpMethod = method
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpBody = try JSONEncoder().encode(body)
-        if auth, let token { req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
-
-        let (data, resp) = try await URLSession.shared.data(for: req)
-        guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            if (resp as? HTTPURLResponse)?.statusCode == 401 { throw AuthError.unauthorized }
-            throw URLError(.badServerResponse)
+        for _ in 1...2 { // Try up to 2 times
+            do {
+                var url = baseURL; url.append(path: path)
+                var req = URLRequest(url: url, timeoutInterval: 60) // Increased timeout
+                req.httpMethod = method
+                req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                req.httpBody = try JSONEncoder().encode(body)
+                if auth, let token { req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+                
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                    if (resp as? HTTPURLResponse)?.statusCode == 401 { throw AuthError.unauthorized }
+                    throw URLError(.badServerResponse)
+                }
+                return try JSONDecoder().decode(T.self, from: data)
+            } catch {
+                continue
+            }
         }
-        return try JSONDecoder().decode(T.self, from: data)
+        throw URLError(.timedOut)
     }
-
+    
     enum AuthError: Error { case unauthorized }
 }
 
-// Rename to avoid collisions — no more “Ambiguous use of set/delete”
+// Keychain helper remains the same
 enum FSKeychain {
     static func set(_ data: Data, for key: String) {
         let q: [String: Any] = [
