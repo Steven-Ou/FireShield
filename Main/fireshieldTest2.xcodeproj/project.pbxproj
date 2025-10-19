@@ -6,8 +6,41 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AA711DEB2EA4BEC9009828D1 /* ViewRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DEA2EA4BEA8009828D1 /* ViewRouter.swift */; };
+		AA711DEC2EA4BEC9009828D1 /* AppFlowPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DDE2EA4BEA8009828D1 /* AppFlowPreview.swift */; };
+		AA711DED2EA4BEC9009828D1 /* ApiModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DDD2EA4BEA8009828D1 /* ApiModels.swift */; };
+		AA711DEE2EA4BEC9009828D1 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE12EA4BEA8009828D1 /* DashboardView.swift */; };
+		AA711DEF2EA4BEC9009828D1 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE72EA4BEA8009828D1 /* ProfileView.swift */; };
+		AA711DF02EA4BEC9009828D1 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE62EA4BEA8009828D1 /* OnboardingView.swift */; };
+		AA711DF12EA4BEC9009828D1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE42EA4BEA8009828D1 /* LoginView.swift */; };
+		AA711DF22EA4BEC9009828D1 /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE92EA4BEA8009828D1 /* TrendsView.swift */; };
+		AA711DF32EA4BEC9009828D1 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE52EA4BEA8009828D1 /* MainApp.swift */; };
+		AA711DF42EA4BEC9009828D1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DDF2EA4BEA8009828D1 /* AppState.swift */; };
+		AA711DF52EA4BEC9009828D1 /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DDC2EA4BEA8009828D1 /* ApiClient.swift */; };
+		AA711DF62EA4BEC9009828D1 /* SafetyInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE82EA4BEA8009828D1 /* SafetyInsightsView.swift */; };
+		AA711DF72EA4BEC9009828D1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA711DE22EA4BEA8009828D1 /* HomeView.swift */; };
+		AA711DF92EA4BEC9009828D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA711DE02EA4BEA8009828D1 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		9F0C1E762EA42B3A008114FB /* fireshieldTest2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fireshieldTest2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA4015F72EA4BADE00F0E432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = fireshieldTest2/Info.plist; sourceTree = "<group>"; };
+		AA711DDC2EA4BEA8009828D1 /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
+		AA711DDD2EA4BEA8009828D1 /* ApiModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiModels.swift; sourceTree = "<group>"; };
+		AA711DDE2EA4BEA8009828D1 /* AppFlowPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFlowPreview.swift; sourceTree = "<group>"; };
+		AA711DDF2EA4BEA8009828D1 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AA711DE02EA4BEA8009828D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA711DE12EA4BEA8009828D1 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		AA711DE22EA4BEA8009828D1 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		AA711DE32EA4BEA8009828D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA711DE42EA4BEA8009828D1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		AA711DE52EA4BEA8009828D1 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
+		AA711DE62EA4BEA8009828D1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		AA711DE72EA4BEA8009828D1 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AA711DE82EA4BEA8009828D1 /* SafetyInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyInsightsView.swift; sourceTree = "<group>"; };
+		AA711DE92EA4BEA8009828D1 /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
+		AA711DEA2EA4BEA8009828D1 /* ViewRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRouter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,6 +57,22 @@
 		9F0C1E6D2EA42B3A008114FB = {
 			isa = PBXGroup;
 			children = (
+				AA711DDC2EA4BEA8009828D1 /* ApiClient.swift */,
+				AA711DDD2EA4BEA8009828D1 /* ApiModels.swift */,
+				AA711DDE2EA4BEA8009828D1 /* AppFlowPreview.swift */,
+				AA711DDF2EA4BEA8009828D1 /* AppState.swift */,
+				AA711DE02EA4BEA8009828D1 /* Assets.xcassets */,
+				AA711DE12EA4BEA8009828D1 /* DashboardView.swift */,
+				AA711DE22EA4BEA8009828D1 /* HomeView.swift */,
+				AA711DE32EA4BEA8009828D1 /* Info.plist */,
+				AA711DE42EA4BEA8009828D1 /* LoginView.swift */,
+				AA711DE52EA4BEA8009828D1 /* MainApp.swift */,
+				AA711DE62EA4BEA8009828D1 /* OnboardingView.swift */,
+				AA711DE72EA4BEA8009828D1 /* ProfileView.swift */,
+				AA711DE82EA4BEA8009828D1 /* SafetyInsightsView.swift */,
+				AA711DE92EA4BEA8009828D1 /* TrendsView.swift */,
+				AA711DEA2EA4BEA8009828D1 /* ViewRouter.swift */,
+				AA4015F72EA4BADE00F0E432 /* Info.plist */,
 				9F0C1E772EA42B3A008114FB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,6 +146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA711DF92EA4BEC9009828D1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +157,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA711DEB2EA4BEC9009828D1 /* ViewRouter.swift in Sources */,
+				AA711DEC2EA4BEC9009828D1 /* AppFlowPreview.swift in Sources */,
+				AA711DED2EA4BEC9009828D1 /* ApiModels.swift in Sources */,
+				AA711DEE2EA4BEC9009828D1 /* DashboardView.swift in Sources */,
+				AA711DEF2EA4BEC9009828D1 /* ProfileView.swift in Sources */,
+				AA711DF02EA4BEC9009828D1 /* OnboardingView.swift in Sources */,
+				AA711DF12EA4BEC9009828D1 /* LoginView.swift in Sources */,
+				AA711DF22EA4BEC9009828D1 /* TrendsView.swift in Sources */,
+				AA711DF32EA4BEC9009828D1 /* MainApp.swift in Sources */,
+				AA711DF42EA4BEC9009828D1 /* AppState.swift in Sources */,
+				AA711DF52EA4BEC9009828D1 /* ApiClient.swift in Sources */,
+				AA711DF62EA4BEC9009828D1 /* SafetyInsightsView.swift in Sources */,
+				AA711DF72EA4BEC9009828D1 /* HomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +304,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = fireshieldTest2/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -272,6 +337,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = fireshieldTest2/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -17,7 +17,7 @@ spring:
 
 server:
   port: 8080
-
+  address: 0.0.0.0
 logging:
   level:
     root: info
@@ -29,10 +29,10 @@ app:
     secret: "CHANGE_ME_to_a_very_long_random_secret_value_at_least_64_bytes"
     expirySeconds: 7200
   cors:
-    allowed-origins: "http://localhost:3000, http://127.0.0.1:3000, http://localhost:8080"
+    allowed-origins: "*"
   ingest:
     device-header: "X-Device-Key"
   gemini:
-    model: "gemini-2.5-flash"   # fast & low-cost; swap to gemini-2.0-pro for deeper reasoning
+    model: "gemini-2.5-flash" # fast & low-cost; swap to gemini-2.0-pro for deeper reasoning
     maxOutputTokens: 512
     temperature: 0.3
