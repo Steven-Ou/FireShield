@@ -12,9 +12,36 @@
 		AAB329D32EA4377C00721265 /* fireshieldTest2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = fireshieldTest2.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA711E412EA4D383009828D1 /* Exceptions for "Main" folder in "Main" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				fireshieldTest2/ApiClient.swift,
+				fireshieldTest2/ApiModels.swift,
+				fireshieldTest2/AppFlowPreview.swift,
+				fireshieldTest2/AppState.swift,
+				fireshieldTest2/Assets.xcassets,
+				fireshieldTest2/DashboardView.swift,
+				fireshieldTest2/HomeView.swift,
+				fireshieldTest2/Info.plist,
+				fireshieldTest2/LoginView.swift,
+				fireshieldTest2/MainApp.swift,
+				fireshieldTest2/OnboardingView.swift,
+				fireshieldTest2/ProfileView.swift,
+				fireshieldTest2/SafetyInsightsView.swift,
+				fireshieldTest2/TrendsView.swift,
+				fireshieldTest2/ViewRouter.swift,
+			);
+			target = AA67A3602EA356DC00B9CA63 /* Main */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA67A3632EA356DC00B9CA63 /* Main */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA711E412EA4D383009828D1 /* Exceptions for "Main" folder in "Main" target */,
+			);
 			path = Main;
 			sourceTree = "<group>";
 		};
