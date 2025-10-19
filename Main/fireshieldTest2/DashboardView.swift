@@ -7,16 +7,27 @@ struct DashboardView: View {
     init(username: String) {
         self.username = username
 
-        // Tab bar styling to match your login theme
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.white.withAlphaComponent(0.2)
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.orange
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.orange]
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.white
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        // Tab bar styling
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor.orange
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.orange]
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.white
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        
+        // Navigation bar styling
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground() // Make it transparent
+        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // Set large title color
+        navBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white] // Set small title color
+        
+        // Apply the appearance to all navigation bars
+        UINavigationBar.appearance().standardAppearance = navBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
+        UINavigationBar.appearance().compactAppearance = navBarAppearance
     }
 
     var body: some View {
