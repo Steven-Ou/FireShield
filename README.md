@@ -40,7 +40,6 @@ FireShield/
 │ ├── User.swift
 │ └── FireShieldApp.swift
 └── Assets/
-└── firesheild_logo.png (placeholder)
 
 
 ---
