@@ -24,33 +24,48 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
     /**
      * Rich stats for report (COALESCE avoids nulls; interval uses a robust cast).
      * Row order:
-     *   [0] samples_count (bigint)
-     *   [1] window_start  (timestamptz)
-     *   [2] window_end    (timestamptz)
-     *   [3] avg_tvoc
-     *   [4] min_tvoc
-     *   [5] max_tvoc
-     *   [6] stddev_tvoc
-     *   [7] avg_ch2o
-     *   [8] avg_benzene
-     *   [9] cnt_elevated
-     *   [10] cnt_critical
+     * [0] samples_count (bigint)
+     * [1] window_start  (timestamptz)
+     * [2] window_end    (timestamptz)
+     * [3] avg_tvoc
+     * [4] min_tvoc
+     * [5] max_tvoc
+     * [6] stddev_tvoc
+     * [7] avg_ch2o
+     * [8] avg_benzene
+     * [9] cnt_elevated
+     * [10] cnt_critical
      */
     @Query(value = """
+    WITH stats AS (
+        SELECT
+            COUNT(*)                                                                 AS samples_count,
+            MIN(ts)                                                                  AS window_start,
+            MAX(ts)                                                                  AS window_end,
+            AVG(tvoc_ppb)                                                            AS avg_tvoc,
+            MIN(tvoc_ppb)                                                            AS min_tvoc,
+            MAX(tvoc_ppb)                                                            AS max_tvoc,
+            STDDEV_SAMP(tvoc_ppb)                                                    AS stddev_tvoc,
+            AVG(formaldehyde_ppm)                                                    AS avg_ch2o,
+            AVG(benzene_ppm)                                                         AS avg_benzene,
+            SUM(CASE WHEN tvoc_ppb >= :elev THEN 1 ELSE 0 END)                       AS cnt_elevated,
+            SUM(CASE WHEN tvoc_ppb >= :crit THEN 1 ELSE 0 END)                       AS cnt_critical
+        FROM samples
+        WHERE ts >= CURRENT_TIMESTAMP - (:hours || ' hours')::interval
+    )
     SELECT
-        COUNT(*)::bigint                                                                 AS samples_count,
-        COALESCE(MIN(ts), CURRENT_TIMESTAMP - (:hours || ' hours')::interval)            AS window_start,
-        COALESCE(MAX(ts), CURRENT_TIMESTAMP)                                             AS window_end,
-        COALESCE(AVG(tvoc_ppb), 0)                                                       AS avg_tvoc,
-        COALESCE(MIN(tvoc_ppb), 0)                                                       AS min_tvoc,
-        COALESCE(MAX(tvoc_ppb), 0)                                                       AS max_tvoc,
-        COALESCE(STDDEV_SAMP(tvoc_ppb), 0)                                               AS stddev_tvoc,
-        COALESCE(AVG(formaldehyde_ppm), 0)                                               AS avg_ch2o,
-        COALESCE(AVG(benzene_ppm), 0)                                                    AS avg_benzene,
-        COALESCE(SUM(CASE WHEN tvoc_ppb >= :elev THEN 1 ELSE 0 END), 0)                  AS cnt_elevated,
-        COALESCE(SUM(CASE WHEN tvoc_ppb >= :crit THEN 1 ELSE 0 END), 0)                  AS cnt_critical
-    FROM samples
-    WHERE ts >= CURRENT_TIMESTAMP - (:hours || ' hours')::interval
+        COALESCE(samples_count, 0)::bigint,
+        COALESCE(window_start, CURRENT_TIMESTAMP - (:hours || ' hours')::interval),
+        COALESCE(window_end, CURRENT_TIMESTAMP),
+        COALESCE(avg_tvoc, 0),
+        COALESCE(min_tvoc, 0),
+        COALESCE(max_tvoc, 0),
+        COALESCE(stddev_tvoc, 0),
+        COALESCE(avg_ch2o, 0),
+        COALESCE(avg_benzene, 0),
+        COALESCE(cnt_elevated, 0),
+        COALESCE(cnt_critical, 0)
+    FROM stats
     """, nativeQuery = true)
     Object[] detailedStats(@Param("hours") int hours,
                         @Param("elev") double tvocElev,
