@@ -23,7 +23,7 @@ struct SafetyInsightsView: View {
                     Text("Safety Insights")
                         .font(.largeTitle).fontWeight(.bold)
                         // Title color remains black as requested
-                        .foregroundColor(.black).shadow(radius: 2)
+                        .foregroundColor(.white).shadow(radius: 2)
                         .padding([.top, .horizontal])
 
 
