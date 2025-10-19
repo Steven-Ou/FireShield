@@ -17,6 +17,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class InsightsService {
@@ -417,12 +419,16 @@ public class InsightsService {
     String url = "https://generativelanguage.googleapis.com/v1/models/" + model + ":generateContent?key=" + apiKey;
     String bodyJson = buildRequestJson(prompt, outTokens);
     HttpRequest req = HttpRequest.newBuilder()
-        .uri(URI.create(url))
-        .timeout(Duration.ofSeconds(30))
-        .header("Content-Type", "application/json; charset=UTF-8")
-        .POST(HttpRequest.BodyPublishers.ofString(bodyJson, StandardCharsets.UTF_8))
-        .build();
-    return http.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(bodyJson, StandardCharsets.UTF_8))
+                .build();
+
+        // --- MODIFICATION ---
+        // Use sendAsync and enforce a 5-second timeout on getting the result.
+        // This prevents the thread from hanging indefinitely.
+        CompletableFuture<HttpResponse<String>> future = http.sendAsync(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        return future.get(5, TimeUnit.SECONDS); // This will throw a TimeoutException if it takes too long
   }
 
   private String buildRequestJson(String prompt, int outTokens) throws Exception {
