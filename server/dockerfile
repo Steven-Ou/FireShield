@@ -1,0 +1,17 @@
+# Use an official OpenJDK runtime as a parent image
+# We use Java 21 to match your project's pom.xml
+FROM eclipse-temurin:21-jdk-jammy
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the compiled jar file from the target directory into the container
+# The jar file is created when Render runs the "./mvnw clean install" build command
+COPY target/server-0.0.1-SNAPSHOT.jar app.jar
+
+# Make port 8080 available to the world outside this container
+# Render will automatically map this to its public port 443 (for HTTPS)
+EXPOSE 8080
+
+# Run the jar file when the container launches
+ENTRYPOINT ["java", "-jar", "app.jar"]
