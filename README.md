@@ -3,7 +3,7 @@
   <h1>FireShield</h1>
 
   <!-- Replace the image source below with your actual logo file or URL -->
-  <img src="./Main/fireshield_logo.png" alt="FireShield Logo" width="120" height="120">
+  <img src="./Main/fireshield_logo.png" alt="FireShield Logo" width="200" height="200">
 
   <p>
     FireShield is an iOS application designed to help firefighters and first responders
@@ -40,7 +40,6 @@ FireShield/
 │ ├── User.swift
 │ └── FireShieldApp.swift
 └── Assets/
-└── firesheild_logo.png (placeholder)
 
 
 ---
