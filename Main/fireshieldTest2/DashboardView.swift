@@ -39,7 +39,7 @@ struct DashboardView: View {
 
                 NavigationView {
                     ProfileView(username: username)
-                        .navigationTitle("Profile") // Moved here
+                        .navigationTitle("Profile")
                 }
                 .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
             }
@@ -52,7 +52,10 @@ struct DashboardView: View {
 #Preview {
     let base = URL(string: "http://127.0.0.1:8080/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
-    DashboardView(username: "Alex")
+    // Load mock data for all previews within the dashboard
+    mockState.report = InsightsReport.mockReport()
+    
+    return DashboardView(username: "Alex")
         .environmentObject(ViewRouter())
         .environmentObject(mockState)
 }

@@ -3,22 +3,20 @@ import SwiftUI
 struct SafetyInsightsView: View {
     @EnvironmentObject var state: AppState
 
-    // Local theming
-    private let backgroundGradient = LinearGradient(
-        gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
-        startPoint: .top, endPoint: .bottom
-    )
     @ViewBuilder private func card(_ content: some View) -> some View {
         content.padding().background(.ultraThinMaterial).cornerRadius(12)
     }
 
     var body: some View {
         ZStack {
-            backgroundGradient.ignoresSafeArea()
+            // Changed background to white
+            Color.white.ignoresSafeArea()
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Safety Insights")
                         .font(.largeTitle).fontWeight(.bold)
+                        // Changed title color to black
                         .foregroundColor(.black).shadow(radius: 2)
                         .padding([.top, .horizontal])
 
@@ -29,6 +27,7 @@ struct SafetyInsightsView: View {
                                 Text("Summary").font(.headline)
                                 Text(summary)
                             }
+                            .foregroundColor(.black) // Ensure card text is readable
                         ).padding(.horizontal)
                     }
 
@@ -50,11 +49,12 @@ struct SafetyInsightsView: View {
                                 Text("Policy Suggestion").font(.headline)
                                 Text(p)
                             }
+                            .foregroundColor(.black)
                         ).padding(.horizontal)
                     }
 
                     if let err = state.lastError {
-                        Text(err).foregroundColor(.white).padding(.horizontal)
+                        Text(err).foregroundColor(.black).padding(.horizontal)
                     }
 
                     Spacer(minLength: 12)
@@ -75,6 +75,7 @@ struct BulletCard: View {
                 HStack(alignment: .top) { Text("•"); Text(b) }
             }
         }
+        .foregroundColor(.black)
         .padding().background(.ultraThinMaterial).cornerRadius(12)
         .padding(.horizontal)
     }
@@ -99,6 +100,7 @@ struct ChecklistCard: View {
                 .buttonStyle(.plain)
             }
         }
+        .foregroundColor(.black)
         .padding().background(.ultraThinMaterial).cornerRadius(12)
         .padding(.horizontal)
     }
@@ -106,58 +108,11 @@ struct ChecklistCard: View {
 
 // MARK: - Preview
 
-private struct SafetyInsightsView_PreviewHarness: View {
-    @StateObject private var state: AppState
-
-    init() {
-        // Build explicit, typed preview data so the compiler never guesses.
-        let base: URL = URL(string: "http://127.0.0.1:8080/")!
-        let client = ApiClient(baseURL: base)
-        let s = AppState(api: client)
-
-        var metrics: [String: AnyCodable] = [:]
-        metrics["severity"] = AnyCodable("ELEVATED")
-        metrics["avg_tvoc_ppb"] = AnyCodable(Double(780))
-        metrics["max_tvoc_ppb"] = AnyCodable(Double(1120))
-        metrics["fraction_time_critical"] = AnyCodable(Double(0.18))
-
-        s.report = InsightsReport(
-            windowHours: 24,
-            metrics: metrics,
-            aiReport: .init(
-                summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
-                riskScore: 72,
-                keyFindings: [
-                    "Spikes above 900 ppb",
-                    "Upward trend in last 6h",
-                    "18% time in critical"
-                ],
-                recommendations: [
-                    "Vent apparatus bay 30+ min",
-                    "Bag PPE outside quarters",
-                    "Surface wipe-down today"
-                ],
-                deconChecklist: [
-                    "Open bay doors",
-                    "Bag & isolate PPE",
-                    "Wipe contact surfaces",
-                    "Shower within 1 hour"
-                ],
-                policySuggestion: "Adopt post-call ventilation SOP; track elevated events weekly."
-            ),
-            model: "mock",
-            source: "preview"
-        )
-
-        _state = StateObject(wrappedValue: s)
-    }
-
-    var body: some View {
-        SafetyInsightsView()
-            .environmentObject(state)
-    }
-}
-
 #Preview {
-    SafetyInsightsView_PreviewHarness()
+    let mockState = AppState(api: ApiClient(baseURL: URL(string: "http://127.0.0.1:8080/")!))
+    mockState.report = InsightsReport.mockReport()
+
+    return SafetyInsightsView()
+        .environmentObject(mockState)
 }
+

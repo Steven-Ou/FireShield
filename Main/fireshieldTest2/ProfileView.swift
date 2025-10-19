@@ -3,18 +3,15 @@ import SwiftUI
 struct ProfileView: View {
     let username: String
     
-    private let backgroundGradient = LinearGradient(
-        gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
-        startPoint: .top, endPoint: .bottom
-    )
-    
     var body: some View {
         ZStack {
-            backgroundGradient.ignoresSafeArea()
+            // Changed background to white for consistency
+            Color.white.ignoresSafeArea()
+            
             VStack(spacing: 20) {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable().frame(width: 100, height: 100)
-                    .foregroundColor(.white)
+                    .foregroundColor(.gray) // Changed icon color
                     .padding(.top, 40)
                 
                 Text(username).font(.title2).fontWeight(.bold).foregroundColor(.black)
@@ -37,8 +34,8 @@ struct ProfileView: View {
                 
                 Spacer()
             }
-            .navigationTitle("Profile")
         }
+        .navigationTitle("Profile")
     }
 }
 
