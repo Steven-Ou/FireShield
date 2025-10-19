@@ -71,13 +71,18 @@ public class MetricsService {
     Object[] row = normalizeRow(samples.detailedStats(windowHours, ELEV, CRIT));
     long samplesCount = toLong(safe(row, 0));
 
+    // --- FIX STARTS HERE ---
     // Crude slope from halves (also unwrap)
-    Object[] halves = normalizeRow(samples.tvocHalves(windowHours));
-    Double avgFirst  = (halves != null && halves.length >= 1) ? toDouble(halves[0]) : null;
-    Double avgSecond = (halves != null && halves.length >= 2) ? toDouble(halves[1]) : null;
-    Double slope = (avgFirst != null && avgSecond != null)
-        ? round((avgSecond - avgFirst) / (windowHours / 2.0), 3) // ppb per hour
-        : null;
+    Double slope = null;
+    if (samplesCount > 1) { // Only calculate slope if there's data
+        Object[] halves = normalizeRow(samples.tvocHalves(windowHours));
+        Double avgFirst  = (halves != null && halves.length >= 1) ? toDouble(halves[0]) : null;
+        Double avgSecond = (halves != null && halves.length >= 2) ? toDouble(halves[1]) : null;
+        if (avgFirst != null && avgSecond != null) {
+            slope = round((avgSecond - avgFirst) / (windowHours / 2.0), 3); // ppb per hour
+        }
+    }
+    // --- FIX ENDS HERE ---
 
     Double avgTvoc = round(toNumber(row, 3), 3);
     Double minTvoc = round(toNumber(row, 4), 3);
