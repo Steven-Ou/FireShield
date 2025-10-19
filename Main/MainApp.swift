@@ -6,7 +6,7 @@ struct MainApp: App {
     @StateObject private var state: AppState
 
     init() {
-        let base = URL(string: "https://fireshield-75tcv.onrender.com")!
+        let base = URL(string: "https://fireshield-75sc.onrender.com")!
         
         let api  = ApiClient(baseURL: base)
         _state = StateObject(wrappedValue: AppState(api: api))
