@@ -19,7 +19,7 @@ struct TrendsView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Weekly VOC Exposure")
                         .font(.largeTitle).fontWeight(.bold)
-                        .foregroundColor(.black).shadow(radius: 2)
+                        .foregroundColor(.white).shadow(radius: 2)
                         .padding([.top, .horizontal])
 
                     HStack(spacing: 15) {
