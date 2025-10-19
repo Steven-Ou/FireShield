@@ -1,0 +1,145 @@
+import SwiftUI
+
+struct TrendsView: View {
+    @State private var readings: [VOCReading] = VOCReading.sampleData()
+    @State private var selectedReading: VOCReading?
+
+    private let backgroundGradient = LinearGradient(
+        gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+        startPoint: .top, endPoint: .bottom
+    )
+    @ViewBuilder private func card(_ content: some View) -> some View {
+        content.padding().background(.ultraThinMaterial).cornerRadius(10)
+    }
+
+    var body: some View {
+        ZStack {
+            backgroundGradient.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Weekly VOC Exposure")
+                        .font(.largeTitle).fontWeight(.bold)
+                        .foregroundColor(.white).shadow(radius: 2)
+                        .padding([.top, .horizontal])
+
+                    HStack(spacing: 15) {
+                        SummaryCard(title: "Avg TVOC", value: String(format: "%.0f ppb", averageTVOC()), color: .black)
+                        SummaryCard(title: "Max TVOC", value: String(format: "%.0f ppb", maxTVOC()), color: .black)
+                    }
+                    .padding(.horizontal)
+
+                    HStack(spacing: 15) {
+                        SummaryCard(title: "Avg Formaldehyde", value: String(format: "%.2f ppm", averageFormaldehyde()), color: .black)
+                        SummaryCard(title: "Avg Benzene", value: String(format: "%.2f ppm", averageBenzene()), color: .black)
+                    }
+                    .padding(.horizontal)
+
+                    Divider().background(Color.white.opacity(0.5)).padding()
+
+                    // Horizontal Day Picker
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(readings) { reading in
+                                Button(action: {
+                                    self.selectedReading = reading
+                                }) {
+                                    Text(reading.dayAbbr)
+                                        .fontWeight(selectedReading == reading ? .bold : .regular)
+                                        .padding()
+                                        .background(
+                                            ZStack {
+                                                if selectedReading == reading {
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .fill(.ultraThinMaterial)
+                                                }
+                                            }
+                                        )
+                                        .foregroundColor(.black)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+
+                    // Details for selected day
+                    if let reading = selectedReading {
+                        card(
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(reading.dayOfWeek).font(.title2).fontWeight(.bold)
+                                Text("TVOC: \(Int(reading.tvoc_ppb)) ppb")
+                                Text("Formaldehyde: \(String(format: "%.2f", reading.formaldehyde_ppm)) ppm")
+                                Text("Benzene: \(String(format: "%.2f", reading.benzene_ppm)) ppm")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        )
+                        .padding(.horizontal)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            if self.selectedReading == nil {
+                self.selectedReading = self.readings.first
+            }
+        }
+    }
+
+    // Helpers
+    func averageTVOC() -> Double { readings.map { $0.tvoc_ppb }.reduce(0, +) / Double(readings.count) }
+    func maxTVOC() -> Double { readings.map { $0.tvoc_ppb }.max() ?? 0 }
+    func averageFormaldehyde() -> Double { readings.map { $0.formaldehyde_ppm }.reduce(0, +) / Double(readings.count) }
+    func averageBenzene() -> Double { readings.map { $0.benzene_ppm }.reduce(0, +) / Double(readings.count) }
+}
+
+struct SummaryCard: View {
+    let title: String
+    let value: String
+    let color: Color
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title).font(.headline).foregroundColor(.black.opacity(0.7))
+            Text(value).font(.title2).fontWeight(.bold).foregroundColor(color)
+        }
+        .frame(maxWidth: .infinity)
+        .padding().background(.ultraThinMaterial).cornerRadius(10)
+    }
+}
+
+struct VOCReading: Identifiable, Equatable {
+    let id = UUID()
+    let date: Date
+    let tvoc_ppb: Double
+    let formaldehyde_ppm: Double
+    let benzene_ppm: Double
+
+    var dayOfWeek: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "EEEE"
+        return fmt.string(from: date)
+    }
+    
+    var dayAbbr: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "E"
+        return fmt.string(from: date)
+    }
+
+    static func sampleData() -> [VOCReading] {
+        let calendar = Calendar.current
+        let today = Date()
+        return (0..<7).map { offset in
+            let date = calendar.date(byAdding: .day, value: -offset, to: today)!
+            return VOCReading(
+                date: date,
+                tvoc_ppb: Double.random(in: 200...1200),
+                formaldehyde_ppm: Double.random(in: 0.01...0.15),
+                benzene_ppm: Double.random(in: 0.01...0.05)
+            )
+        }.reversed()
+    }
+}
+
+#Preview {
+    TrendsView()
+}
+
