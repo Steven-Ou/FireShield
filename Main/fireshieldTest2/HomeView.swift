@@ -67,7 +67,7 @@ struct HomeView: View {
 
                     VStack(alignment: .leading) {
                         Text("24-Hour Exposure Trend")
-                            .font(.headline).foregroundColor(.white).shadow(radius: 1)
+                            .font(.headline).foregroundColor(.black).shadow(radius: 1)
                             .padding([.top, .horizontal])
 
                         RoundedRectangle(cornerRadius: 15)
@@ -128,11 +128,11 @@ struct MetricCard: View {
     var value: String
     var color: Color
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(spacing: 5) {
             Text(title).font(.headline).foregroundColor(.black.opacity(0.7))
             Text(value).font(.title2).fontWeight(.bold).foregroundColor(color)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
         .padding().background(.ultraThinMaterial).cornerRadius(15)
     }
 }

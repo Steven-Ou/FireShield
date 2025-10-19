@@ -66,11 +66,11 @@ struct SummaryCard: View {
     let value: String
     let color: Color
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(spacing: 4) {
             Text(title).font(.headline).foregroundColor(.black.opacity(0.7))
             Text(value).font(.title2).fontWeight(.bold).foregroundColor(color)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
         .padding().background(.ultraThinMaterial).cornerRadius(10)
     }
 }
