@@ -7,7 +7,7 @@ struct AppFlowPreview: View {
     @StateObject private var state: AppState
 
     init() {
-        let base = URL(string: "http://127.0.0.1:8080/")!
+        let base = URL(string: "https://fireshield-tdpy.onrender.com/")!
         let api  = ApiClient(baseURL: base)
         _state = StateObject(wrappedValue: AppState(api: api))
     }

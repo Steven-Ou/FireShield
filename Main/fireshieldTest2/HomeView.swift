@@ -141,7 +141,7 @@ private func format(_ v: Double?, unit: String) -> String { v.map { String(forma
 private func formatPct(_ v: Double?) -> String { v.map { String(format:"%.0f%%", $0*100) } ?? "—" }
 
 #Preview {
-    let base = URL(string: "http://127.0.0.1:8080/")!
+    let base = URL(string: "https://fireshield-tdpy.onrender.com/")!
     let mock = AppState(api: ApiClient(baseURL: base))
     mock.report = InsightsReport(
         windowHours: 24,

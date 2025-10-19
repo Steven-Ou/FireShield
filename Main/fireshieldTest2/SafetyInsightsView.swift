@@ -115,10 +115,9 @@ struct ChecklistCard: View {
 // MARK: - Preview
 
 #Preview {
-    let mockState = AppState(api: ApiClient(baseURL: URL(string: "http://127.0.0.1:8080/")!))
-    mockState.report = InsightsReport.mockReport()
-
+    let state = AppState(api: ApiClient(baseURL: URL(string: "https://fireshield-tdpy.onrender.com/")!))
+    // No mockReport; you’d trigger a fetch in the view (e.g., .task { await state.refresh() })
     return SafetyInsightsView()
-        .environmentObject(mockState)
+        .environmentObject(state)
 }
 

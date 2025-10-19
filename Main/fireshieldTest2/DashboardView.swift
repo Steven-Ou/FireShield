@@ -61,7 +61,7 @@ struct DashboardView: View {
 }
 
 #Preview {
-    let base = URL(string: "http://127.0.0.1:8080/")!
+    let base = URL(string: "https://fireshield-tdpy.onrender.com/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
     // Load mock data for all previews within the dashboard
     mockState.report = InsightsReport.mockReport()
