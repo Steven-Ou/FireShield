@@ -3,7 +3,7 @@
   <h1>FireShield</h1>
 
   <!-- Replace the image source below with your actual logo file or URL -->
-  <img src="assets/firesheild_logo.png" alt="FireShield Logo" width="120" height="120">
+  <img src="[assets/firesheild_logo.png](https://chatgpt.com/backend-api/estuary/content?id=file_00000000ae3c622fa2f487a7f28d470d&ts=489120&p=fs&cid=1&sig=0327fa4cbca770cfc1cd67a8a59448fa839301740e930794a62206de95f82bf1&v=0)" alt="FireShield Logo" width="120" height="120">
 
   <p>
     FireShield is an iOS application designed to help firefighters and first responders
