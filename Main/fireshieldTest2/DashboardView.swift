@@ -3,10 +3,10 @@ import SwiftUI
 struct DashboardView: View {
     @EnvironmentObject var state: AppState
     var username: String
-
+    
     init(username: String) {
         self.username = username
-
+        
         // Tab bar styling to match your login theme
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -18,26 +18,28 @@ struct DashboardView: View {
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
                            startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
-
+            
             TabView {
                 HomeView()
                     .environmentObject(state)
                     .tabItem { Label("Home", systemImage: "house.fill") }
-
+                
                 TrendsView()
                     .tabItem { Label("Trends", systemImage: "chart.line.uptrend.xyaxis") }
-
-                SafetyInsightsView()
-                    .environmentObject(state)
-                    .tabItem { Label("Insights", systemImage: "list.bullet.clipboard.fill") }
-
+                
+                
                 NavigationView {
+                    SafetyInsightsView()
+                        .environmentObject(state)
+                }
+                .tabItem { Label("Insights", systemImage: "list.bullet.clipboard.fill") }
+                NavigationView{
                     ProfileView(username: username)
                         .navigationTitle("Profile")
                         .toolbarColorScheme(.dark, for: .navigationBar)

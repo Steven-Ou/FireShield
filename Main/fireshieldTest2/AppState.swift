@@ -34,6 +34,10 @@ final class AppState: ObservableObject {
             isAuthenticated = false; stopPolling()
         } catch {
             lastError = "Network error. Pull to retry."
+            
+            if report == nil { // Only set the fallback if no report has ever been loaded
+                report = InsightsReport.mockReport()
+                isCritical = report?.severity.uppercased() == "CRITICAL"
         }
     }
 

@@ -2,12 +2,12 @@ import SwiftUI
 
 struct ProfileView: View {
     let username: String
-
+    
     private let backgroundGradient = LinearGradient(
         gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
         startPoint: .top, endPoint: .bottom
     )
-
+    
     var body: some View {
         ZStack {
             backgroundGradient.ignoresSafeArea()
@@ -16,9 +16,9 @@ struct ProfileView: View {
                     .resizable().frame(width: 100, height: 100)
                     .foregroundColor(.white)
                     .padding(.top, 40)
-
+                
                 Text(username).font(.title2).fontWeight(.bold).foregroundColor(.black)
-
+                
                 VStack(spacing: 15) {
                     Button("Edit Profile") { }
                         .foregroundColor(.black)
@@ -34,21 +34,14 @@ struct ProfileView: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(10)
                 .padding()
-
+                
                 Spacer()
             }
             .navigationTitle("Profile")
-            .toolbar{
-                ToolbarItem(placement:.principal){
-                    Text("Profile")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                }
-            }
         }
     }
 }
+
 
 #Preview { ProfileView(username: "Alex") }
 

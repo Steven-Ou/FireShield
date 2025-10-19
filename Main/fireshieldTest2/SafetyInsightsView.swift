@@ -17,10 +17,7 @@ struct SafetyInsightsView: View {
             backgroundGradient.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Safety Insights")
-                        .font(.largeTitle).fontWeight(.bold)
-                        .foregroundColor(.white).shadow(radius: 2)
-                        .padding([.top, .horizontal])
+                    
 
                     if let summary = state.report?.aiReport.summary {
                         card(
@@ -61,6 +58,8 @@ struct SafetyInsightsView: View {
             }
         }
         .navigationTitle("Safety Insights")
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 }
 

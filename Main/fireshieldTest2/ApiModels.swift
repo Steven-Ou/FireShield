@@ -23,6 +23,41 @@ struct InsightsReport: Codable {
         let deconChecklist: [String]
         let policySuggestion: String?
     }
+    static func mockReport() -> InsightsReport {
+            var metrics: [String: AnyCodable] = [:]
+            metrics["severity"] = AnyCodable("ELEVATED")
+            metrics["avg_tvoc_ppb"] = AnyCodable(Double(780))
+            metrics["max_tvoc_ppb"] = AnyCodable(Double(1120))
+            metrics["fraction_time_critical"] = AnyCodable(Double(0.18))
+            
+            return InsightsReport(
+                windowHours: 24,
+                metrics: metrics,
+                aiReport: .init(
+                    summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
+                    riskScore: 72,
+                    keyFindings: [
+                        "Spikes above 900 ppb detected multiple times.",
+                        "An upward trend was observed in the last 6 hours.",
+                        "18% of time spent in the critical exposure zone."
+                    ],
+                    recommendations: [
+                        "Run ventilation in the apparatus bay for 30+ minutes.",
+                        "Bag contaminated PPE outside living quarters.",
+                        "Perform a surface wipe-down in high-traffic areas today."
+                    ],
+                    deconChecklist: [
+                        "Open bay doors for airflow",
+                        "Bag & isolate PPE",
+                        "Wipe contact surfaces",
+                        "Shower within 1 hour"
+                    ],
+                    policySuggestion: "Adopt post-call ventilation SOP; track elevated exposure events weekly."
+                ),
+                model: "mock-fallback",
+                source: "fallback"
+            )
+        }
 }
 
 // === Loose JSON helper for metrics map ===
