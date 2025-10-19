@@ -51,7 +51,26 @@ struct DashboardView: View {
 #Preview {
     let base = URL(string: "http://127.0.0.1:8080/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
-    DashboardView(username: "Alex")
+
+    mockState.report = InsightsReport(
+        windowHours: 24,
+        metrics: [
+            "severity": AnyCodable("ELEVATED"),
+            "avg_tvoc_ppb": AnyCodable(780.0)
+        ],
+        aiReport: .init(
+            summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
+            riskScore: 72,
+            keyFindings: ["Spikes above 900 ppb", "Upward trend in last 6h"],
+            recommendations: ["Vent apparatus bay 30+ min", "Bag PPE outside quarters"],
+            deconChecklist: ["Open bay doors", "Bag & isolate PPE", "Shower within 1 hour"],
+            policySuggestion: "Adopt post-call ventilation SOP."
+        ),
+        model: "mock",
+        source: "preview"
+    )
+
+    return DashboardView(username: "Alex")
         .environmentObject(ViewRouter())
-        .environmentObject(mockState)
+        .environmentObject(mockState) // Pass the populated state
 }
