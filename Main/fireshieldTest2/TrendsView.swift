@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TrendsView: View {
     @State private var readings: [VOCReading] = VOCReading.sampleData()
+    @State private var selectedReading: VOCReading?
 
     private let backgroundGradient = LinearGradient(
         gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
@@ -18,7 +19,7 @@ struct TrendsView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Weekly VOC Exposure")
                         .font(.largeTitle).fontWeight(.bold)
-                        .foregroundColor(.white).shadow(radius: 2)
+                        .foregroundColor(.black).shadow(radius: 2)
                         .padding([.top, .horizontal])
 
                     HStack(spacing: 15) {
@@ -35,21 +36,50 @@ struct TrendsView: View {
 
                     Divider().background(Color.white.opacity(0.5)).padding()
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(readings) { reading in
-                            card(
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(reading.dateString).font(.headline)
-                                    Text("TVOC: \(Int(reading.tvoc_ppb)) ppb")
-                                    Text("Formaldehyde: \(String(format: "%.2f", reading.formaldehyde_ppm)) ppm")
-                                    Text("Benzene: \(String(format: "%.2f", reading.benzene_ppm)) ppm")
+                    // Horizontal Day Picker
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(readings) { reading in
+                                Button(action: {
+                                    self.selectedReading = reading
+                                }) {
+                                    Text(reading.dayAbbr)
+                                        .fontWeight(selectedReading == reading ? .bold : .regular)
+                                        .padding()
+                                        .background(
+                                            ZStack {
+                                                if selectedReading == reading {
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .fill(.ultraThinMaterial)
+                                                }
+                                            }
+                                        )
+                                        .foregroundColor(.black)
                                 }
-                            )
-                            .foregroundColor(.black)
+                            }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+
+                    // Details for selected day
+                    if let reading = selectedReading {
+                        card(
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(reading.dayOfWeek).font(.title2).fontWeight(.bold)
+                                Text("TVOC: \(Int(reading.tvoc_ppb)) ppb")
+                                Text("Formaldehyde: \(String(format: "%.2f", reading.formaldehyde_ppm)) ppm")
+                                Text("Benzene: \(String(format: "%.2f", reading.benzene_ppm)) ppm")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        )
+                        .padding(.horizontal)
+                    }
                 }
+            }
+        }
+        .onAppear {
+            if self.selectedReading == nil {
+                self.selectedReading = self.readings.first
             }
         }
     }
@@ -75,16 +105,22 @@ struct SummaryCard: View {
     }
 }
 
-struct VOCReading: Identifiable {
+struct VOCReading: Identifiable, Equatable {
     let id = UUID()
     let date: Date
     let tvoc_ppb: Double
     let formaldehyde_ppm: Double
     let benzene_ppm: Double
 
-    var dateString: String {
+    var dayOfWeek: String {
         let fmt = DateFormatter()
         fmt.dateFormat = "EEEE"
+        return fmt.string(from: date)
+    }
+    
+    var dayAbbr: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "E"
         return fmt.string(from: date)
     }
 
@@ -106,3 +142,4 @@ struct VOCReading: Identifiable {
 #Preview {
     TrendsView()
 }
+
