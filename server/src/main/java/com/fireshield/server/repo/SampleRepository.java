@@ -4,10 +4,11 @@ import com.fireshield.server.domain.Sample;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 
 public interface SampleRepository extends JpaRepository<Sample, Long> {
 
-  /** Simple averages used by /metrics and /insights */
+    /** Simple averages used by /metrics and /insights */
     @Query(
         value = """
         SELECT
@@ -89,4 +90,36 @@ public interface SampleRepository extends JpaRepository<Sample, Long> {
             AND s.ts <= b.end_ts)                                    AS avg_second_half
     """, nativeQuery = true)
     Object[] tvocHalves(@Param("hours") int hours);
+
+    /** ✅ Time-series query for chart (used by /series endpoint) */
+    @Query(value = """
+      SELECT date_trunc(:bucket, ts) AS bucket_ts, AVG(tvoc_ppb) AS avg_tvoc
+      FROM samples
+      WHERE ts >= CURRENT_TIMESTAMP - (:hours || ' hours')::interval
+      GROUP BY 1
+      ORDER BY 1
+    """, nativeQuery = true)
+    List<Object[]> series(@Param("hours") int hours, @Param("bucket") String bucket);
+
+    @Query(value = """
+  WITH bounds AS (
+    SELECT date_trunc('day', CURRENT_TIMESTAMP) - (:days || ' days')::interval AS start_day,
+           date_trunc('day', CURRENT_TIMESTAMP)                                 AS end_day
+  )
+  SELECT g.day AS bucket_ts,
+         AVG(s.tvoc_ppb) AS avg_tvoc
+  FROM generate_series(
+         (SELECT start_day FROM bounds),
+         (SELECT end_day   FROM bounds),
+         interval '1 day'
+       ) AS g(day)
+  LEFT JOIN samples s
+    ON s.ts >= g.day
+   AND s.ts <  g.day + interval '1 day'
+  GROUP BY g.day
+  ORDER BY g.day
+""", nativeQuery = true)
+List<Object[]> seriesDays(@Param("days") int days);
+
 }
+

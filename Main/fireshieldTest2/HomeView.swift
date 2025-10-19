@@ -1,60 +1,41 @@
 import SwiftUI
-import CoreHaptics
+import Charts
 
 struct HomeView: View {
     @EnvironmentObject var state: AppState
-    @State private var hours = 24
-    @State private var engine: CHHapticEngine?
+    @State private var didLoad = false
 
-    // Local theme
+    // Background theme
     private let backgroundGradient = LinearGradient(
         gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
         startPoint: .top, endPoint: .bottom
     )
-    @ViewBuilder private func card(_ content: some View) -> some View {
-        content.padding().background(.ultraThinMaterial).cornerRadius(15)
-    }
-    private func severityColor(_ s: String) -> Color {
-        switch s.uppercased() {
-        case "CRITICAL": return .red
-        case "ELEVATED": return .orange
-        case "SAFE":     return .green
-        default:         return .gray
-        }
-    }
 
     var body: some View {
         ZStack {
             backgroundGradient.ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+
+                    // Header
                     Text("Live Summary")
-                        .font(.largeTitle).fontWeight(.bold)
-                        .foregroundColor(.white).shadow(radius: 2)
+                        .font(.largeTitle).bold()
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
                         .padding([.top, .horizontal])
 
+                    // Metrics row: Avg TVOC + Severity/Risk chip
                     HStack(spacing: 15) {
                         MetricCard(title: "TVOC (avg)",
                                    value: format(state.report?.avgTVOC, unit: "ppb"),
                                    color: .black)
 
-                        card(
-                            HStack {
-                                Text((state.report?.severity ?? "—").uppercased())
-                                    .font(.subheadline).bold()
-                                    .padding(.horizontal, 10).padding(.vertical, 6)
-                                    .background(severityColor(state.report?.severity ?? ""))
-                                    .foregroundColor(.white)
-                                    .clipShape(Capsule())
-                                Spacer()
-                                if let risk = state.report?.aiReport.riskScore {
-                                    Text("Risk \(risk)").font(.headline).foregroundColor(.black)
-                                }
-                            }
-                        )
+                        infoChip
                     }
                     .padding(.horizontal)
 
+                    // More metrics: Max TVOC + % Critical
                     HStack(spacing: 15) {
                         MetricCard(title: "Max TVOC",
                                    value: format(state.report?.maxTVOC, unit: "ppb"),
@@ -65,63 +46,126 @@ struct HomeView: View {
                     }
                     .padding(.horizontal)
 
+                    // Chemicals row: Formaldehyde + Benzene
+                    HStack(spacing: 15) {
+                        MetricCard(title: "Formaldehyde (avg)",
+                                   value: format(state.report?.metrics["avg_formaldehyde_ppm"]?.value as? Double, unit: "ppm"),
+                                   color: .black)
+                        MetricCard(title: "Benzene (avg)",
+                                   value: format(state.report?.metrics["avg_benzene_ppm"]?.value as? Double, unit: "ppm"),
+                                   color: .black)
+                    }
+                    .padding(.horizontal)
+
+                    // Trend chart
                     VStack(alignment: .leading) {
-                        Text("24-Hour Exposure Trend")
-                            .font(.headline).foregroundColor(.black).shadow(radius: 1)
+                        Text("\(state.report?.windowHours ?? 24)-Hour Exposure Trend")
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .shadow(radius: 1)
                             .padding([.top, .horizontal])
 
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(.regularMaterial)
-                            .frame(height: 180)
-                            .overlay(Text("Graph coming soon…")
-                                .foregroundColor(.black.opacity(0.6)))
-                            .padding(.horizontal)
+                        Chart(state.series) { p in
+                            if let v = p.tvoc_ppb {
+                                LineMark(
+                                    x: .value("Time", p.ts),
+                                    y: .value("TVOC (ppb)", v)
+                                )
+                            }
+                        }
+                        .chartYAxisLabel("ppb")
+                        .frame(height: 220)
+                        .padding(.horizontal)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(12)
                     }
 
+                    // Critical alert banner (optional)
                     if state.report?.severity.uppercased() == "CRITICAL" {
                         HStack(spacing: 15) {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.yellow).font(.title)
+                                .foregroundColor(.yellow)
+                                .font(.title)
                             VStack(alignment: .leading) {
-                                Text("High VOC Levels Detected").fontWeight(.bold)
-                                Text("Increase ventilation and start decon.").font(.subheadline)
-                            }.foregroundColor(.white)
+                                Text("High VOC Levels Detected").bold()
+                                Text("Increase ventilation and start decon.")
+                                    .font(.subheadline)
+                            }
+                            .foregroundColor(.white)
                         }
-                        .padding().background(.black.opacity(0.4))
-                        .cornerRadius(15).padding(.horizontal)
+                        .padding()
+                        .background(.black.opacity(0.4))
+                        .cornerRadius(15)
+                        .padding(.horizontal)
                         .transition(.opacity.combined(with: .move(edge: .top)))
-                        .onAppear { hapticPing() }
                     }
 
+                    // Short AI summary (from aiReport)
                     if let s = state.report?.aiReport.summary {
-                        card(VStack(alignment: .leading, spacing: 8) {
-                            Text("AI Summary").font(.headline)
-                            Text(s)
-                        }).padding(.horizontal)
+                        card(
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("AI Summary").font(.headline)
+                                Text(s)
+                            }
+                            .foregroundColor(.black)
+                        )
+                        .padding(.horizontal)
                     }
 
+                    // Error message (if any)
                     if let err = state.lastError {
-                        Text(err).foregroundColor(.white).padding(.horizontal)
+                        Text(err)
+                            .foregroundColor(.white)
+                            .padding(.horizontal)
                     }
                 }
             }
         }
+        .onAppear {
+            guard !didLoad else { return }
+            didLoad = true
+            Task { await state.refresh(hours: 24) }
+        }
     }
 
-    private func hapticPing() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-        do {
-            if engine == nil { engine = try CHHapticEngine(); try engine?.start() }
-            let sharp = CHHapticEvent(eventType: .hapticTransient, parameters: [
-                CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.9),
-                CHHapticEventParameter(parameterID: .hapticIntensity, value: 1.0)
-            ], relativeTime: 0)
-            let pattern = try CHHapticPattern(events: [sharp], parameters: [])
-            let player = try engine?.makePlayer(with: pattern)
-            try player?.start(atTime: 0)
-        } catch { }
+    // MARK: - Subviews & helpers
+
+    private var infoChip: some View {
+        card(
+            HStack {
+                Text((state.report?.severity ?? "—").uppercased())
+                    .font(.subheadline).bold()
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(severityColor(state.report?.severity ?? ""))
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+
+                Spacer()
+
+                if let risk = state.report?.aiReport.riskScore {
+                    Text("Risk \(risk)")
+                        .font(.headline)
+                        .foregroundColor(.black)
+                }
+            }
+        )
+    }
+
+    @ViewBuilder private func card(_ content: some View) -> some View {
+        content.padding().background(.ultraThinMaterial).cornerRadius(15)
+    }
+
+    private func severityColor(_ s: String) -> Color {
+        switch s.uppercased() {
+        case "CRITICAL": return .red
+        case "ELEVATED": return .orange
+        case "SAFE":     return .green
+        default:         return .gray
+        }
     }
 }
+
+// MARK: - Metric card
 
 struct MetricCard: View {
     var title: String
@@ -137,30 +181,12 @@ struct MetricCard: View {
     }
 }
 
-private func format(_ v: Double?, unit: String) -> String { v.map { String(format:"%.0f %@", $0, unit) } ?? "—" }
-private func formatPct(_ v: Double?) -> String { v.map { String(format:"%.0f%%", $0*100) } ?? "—" }
+// MARK: - Formatters
 
-#Preview {
-    let base = URL(string: "https://fireshield-tdpy.onrender.com/")!
-    let mock = AppState(api: ApiClient(baseURL: base))
-    mock.report = InsightsReport(
-        windowHours: 24,
-        metrics: [
-            "severity": AnyCodable("SAFE"),
-            "avg_tvoc_ppb": AnyCodable(420.0),
-            "max_tvoc_ppb": AnyCodable(910.0),
-            "fraction_time_critical": AnyCodable(0.07)
-        ],
-        aiReport: .init(
-            summary: "Levels trending down; complete routine decon.",
-            riskScore: 28,
-            keyFindings: ["Short peak earlier today", "Mostly below elevated threshold", "Downward slope last 6h"],
-            recommendations: ["Vent bay 10–15 min", "Keep PPE out of quarters", "Wipe down surfaces"],
-            deconChecklist: ["Open bay doors", "Bag PPE", "Shower within 1 hour"],
-            policySuggestion: nil
-        ),
-        model: "gemini-2.5-flash",
-        source: "fallback"
-    )
-    return HomeView().environmentObject(mock)
+private func format(_ v: Double?, unit: String) -> String {
+    v.map { String(format: "%.0f %@", $0, unit) } ?? "—"
+}
+
+private func formatPct(_ v: Double?) -> String {
+    v.map { String(format: "%.0f%%", $0 * 100) } ?? "—"
 }
