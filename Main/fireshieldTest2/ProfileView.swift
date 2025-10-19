@@ -38,6 +38,14 @@ struct ProfileView: View {
                 Spacer()
             }
             .navigationTitle("Profile")
+            .toolbar{
+                ToolbarItem(placement:.principal){
+                    Text("Profile")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
+            }
         }
     }
 }

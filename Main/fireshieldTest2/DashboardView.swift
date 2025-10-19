@@ -10,7 +10,7 @@ struct DashboardView: View {
         // Tab bar styling to match your login theme
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        appearance.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         appearance.stackedLayoutAppearance.selected.iconColor = UIColor.orange
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.orange]
         appearance.stackedLayoutAppearance.normal.iconColor = UIColor.white
@@ -39,6 +39,9 @@ struct DashboardView: View {
 
                 NavigationView {
                     ProfileView(username: username)
+                        .navigationTitle("Profile")
+                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .toolbarBackground(.visible, for: .navigationBar)
                 }
                 .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
             }
@@ -51,26 +54,8 @@ struct DashboardView: View {
 #Preview {
     let base = URL(string: "http://127.0.0.1:8080/")!
     let mockState = AppState(api: ApiClient(baseURL: base))
-
-    mockState.report = InsightsReport(
-        windowHours: 24,
-        metrics: [
-            "severity": AnyCodable("ELEVATED"),
-            "avg_tvoc_ppb": AnyCodable(780.0)
-        ],
-        aiReport: .init(
-            summary: "Elevated VOCs with multiple spikes. Ventilate and complete decon.",
-            riskScore: 72,
-            keyFindings: ["Spikes above 900 ppb", "Upward trend in last 6h"],
-            recommendations: ["Vent apparatus bay 30+ min", "Bag PPE outside quarters"],
-            deconChecklist: ["Open bay doors", "Bag & isolate PPE", "Shower within 1 hour"],
-            policySuggestion: "Adopt post-call ventilation SOP."
-        ),
-        model: "mock",
-        source: "preview"
-    )
-
-    return DashboardView(username: "Alex")
+    DashboardView(username: "Alex")
         .environmentObject(ViewRouter())
-        .environmentObject(mockState) // Pass the populated state
+        .environmentObject(mockState)
 }
+
