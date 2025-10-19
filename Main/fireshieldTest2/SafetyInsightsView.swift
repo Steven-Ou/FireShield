@@ -3,20 +3,26 @@ import SwiftUI
 struct SafetyInsightsView: View {
     @EnvironmentObject var state: AppState
 
+    // Local theming restored
+    private let backgroundGradient = LinearGradient(
+        gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow]),
+        startPoint: .top, endPoint: .bottom
+    )
+
     @ViewBuilder private func card(_ content: some View) -> some View {
         content.padding().background(.ultraThinMaterial).cornerRadius(12)
     }
 
     var body: some View {
         ZStack {
-            // Changed background to white
-            Color.white.ignoresSafeArea()
+            // Restored the gradient background
+            backgroundGradient.ignoresSafeArea()
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Safety Insights")
                         .font(.largeTitle).fontWeight(.bold)
-                        // Changed title color to black
+                        // Title color remains black as requested
                         .foregroundColor(.black).shadow(radius: 2)
                         .padding([.top, .horizontal])
 
@@ -27,7 +33,7 @@ struct SafetyInsightsView: View {
                                 Text("Summary").font(.headline)
                                 Text(summary)
                             }
-                            .foregroundColor(.black) // Ensure card text is readable
+                            .foregroundColor(.black)
                         ).padding(.horizontal)
                     }
 
@@ -54,7 +60,7 @@ struct SafetyInsightsView: View {
                     }
 
                     if let err = state.lastError {
-                        Text(err).foregroundColor(.black).padding(.horizontal)
+                        Text(err).foregroundColor(.white).padding(.horizontal)
                     }
 
                     Spacer(minLength: 12)
