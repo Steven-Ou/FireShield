@@ -50,6 +50,11 @@ struct DashboardView: View {
             .accentColor(.orange)
         }
         .navigationBarBackButtonHidden(true)
+        .task{
+            if state.isAuthenticated && state.report == nil{
+                await state.refresh()
+            }
+        }
     }
 }
 
