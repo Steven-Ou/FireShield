@@ -1,16 +1,31 @@
-# Use an official OpenJDK runtime as a parent image
-# We use Java 21 to match your project's pom.xml
-FROM eclipse-temurin:21-jdk-jammy
+# --- Stage 1: Build the application ---
+# Use a Maven image to get all the build tools
+FROM maven:3.9-eclipse-temurin-21-jammy AS builder
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the compiled jar file from the target directory into the container
-# The jar file is created when Render runs the "./mvnw clean install" build command
-COPY target/server-0.0.1-SNAPSHOT.jar app.jar
+# Copy the maven wrapper and pom.xml to leverage Docker layer caching
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 
-# Make port 8080 available to the world outside this container
-# Render will automatically map this to its public port 443 (for HTTPS)
+# Copy the rest of your source code
+COPY src src
+
+# Run the build command to compile the code and create the jar
+# We skip tests to speed up the deployment build
+RUN ./mvnw package -DskipTests
+
+
+# --- Stage 2: Create the final, lightweight runtime image ---
+# Use a JRE image which is smaller than a full JDK
+FROM eclipse-temurin:21-jre-jammy
+
+WORKDIR /app
+
+# Copy ONLY the built jar file from the 'builder' stage
+COPY --from=builder /app/target/server-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
 # Run the jar file when the container launches
