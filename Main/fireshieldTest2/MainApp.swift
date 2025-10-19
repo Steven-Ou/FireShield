@@ -4,15 +4,16 @@ import SwiftUI
 struct MainApp: App {
     @StateObject private var viewRouter = ViewRouter()
     @StateObject private var state: AppState
-    
+
     init() {
-        let base = URL(string: "https://fireshield-75sc.onrender.com")!
+        let base = URL(string: "https://fireshield-75tcv.onrender.com")!
+        
         let api  = ApiClient(baseURL: base)
         _state = StateObject(wrappedValue: AppState(api: api))
     }
-    
+
     @Environment(\.scenePhase) private var scenePhase
-    
+
     var body: some Scene {
         WindowGroup {
             Group {
