@@ -17,7 +17,7 @@ struct ProfileView: View {
             VStack(spacing: 20) {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable().frame(width: 100, height: 100)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white)
                     .padding(.top, 40)
                 
                 Text(username).font(.title2).fontWeight(.bold).foregroundColor(.black)
@@ -47,4 +47,3 @@ struct ProfileView: View {
 
 
 #Preview { ProfileView(username: "Alex") }
-

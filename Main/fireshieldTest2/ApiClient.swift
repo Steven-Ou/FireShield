@@ -18,11 +18,9 @@ enum ClientError: Error, LocalizedError {
     }
 }
 
-
-
 // MARK: - API Client
 final class ApiClient {
-    /// Base URL, e.g. https://fireshield-tdpy.onrender.com/  (with or without trailing slash)
+    /// Base URL, e.g. https://fireshield-tdpy.onrender.com/
     var baseURL: URL
 
     /// Persisted JWT
@@ -37,13 +35,17 @@ final class ApiClient {
     /// Optional request/response logging
     var debugLogging = false
 
-    init(baseURL: URL) {
-        self.baseURL = baseURL
-        if let data = FSKeychain.get("fireshield.jwt"),
-           let t = String(data: data, encoding: .utf8) {
-            self.token = t
+    // --- SOLUTION ---
+        // AuthError is now correctly nested inside the ApiClient class.
+        enum AuthError: Error { case unauthorized }
+
+        init(baseURL: URL) {
+            self.baseURL = baseURL
+            if let data = FSKeychain.get("fireshield.jwt"),
+               let t = String(data: data, encoding: .utf8) {
+                self.token = t
+            }
         }
-    }
 
     // MARK: - Auth
     struct LoginBody: Encodable { let email: String; let password: String }
@@ -126,7 +128,7 @@ final class ApiClient {
         return try decodeResponse(data: data, response: resp)
     }
 
-    // MARK: - URL Builder (prevents "?hours=24" from being percent-escaped)
+    // MARK: - URL Builder
     private func buildURL(path: String, query: [URLQueryItem]? = nil) throws -> URL {
         guard var comps = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
             throw ClientError.badURL
@@ -162,7 +164,7 @@ final class ApiClient {
 
         do {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601   // needed for TimePoint.ts
+            decoder.dateDecodingStrategy = .iso8601
             return try decoder.decode(T.self, from: data)
         } catch {
             let raw = String(data: data, encoding: .utf8) ?? "<non-utf8>"
