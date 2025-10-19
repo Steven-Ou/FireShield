@@ -18,12 +18,7 @@ enum ClientError: Error, LocalizedError {
     }
 }
 
-// MARK: - Time series point for charts
-struct TimePoint: Codable, Identifiable {
-    let ts: Date
-    let tvoc_ppb: Double?
-    var id: Date { ts }
-}
+
 
 // MARK: - API Client
 final class ApiClient {
